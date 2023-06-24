@@ -1,9 +1,10 @@
+import { UserType } from "@/types/user.type";
 import { Schema, model, models } from "mongoose";
 
 const todoUserSchema = new Schema({
   firstName: {
     type: String,
-    required: true,
+    required: false,
   },
   lastName: {
     type: String,
@@ -27,12 +28,13 @@ const todoUserSchema = new Schema({
     required: false,
   },
   todos: {
-    type: [{ title: "", status: "todo" }],
+    type: [{ title: String, status: String }],
     required: false,
     default: [],
   },
 });
 
-const TodoUser = models.TodoUser || model("user", todoUserSchema);
+const TodoUser = models.TodoUser || model<UserType>("TodoUser", todoUserSchema);
+
 
 export default TodoUser;
