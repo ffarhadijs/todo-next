@@ -42,7 +42,7 @@ const Signup = () => {
     unknown,
     UserType
   >({
-    mutationFn: () => axios.post("/api/signup", form.values),
+    mutationFn: () => axios.post("/api/auth/signup", form.values),
     onSuccess: () => {
       notifications.show({
         color: "green",
