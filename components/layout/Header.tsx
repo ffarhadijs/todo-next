@@ -1,3 +1,4 @@
+import { QueryKey } from "@/enums/queryKey.enum";
 import {
   Text,
   MediaQuery,
@@ -8,9 +9,14 @@ import {
   Header as MantineHeader,
   useMantineTheme,
   ColorScheme,
+  Tooltip,
 } from "@mantine/core";
-import { Dispatch, SetStateAction } from "react";
-import { Sun, MoonStars } from "tabler-icons-react";
+import { notifications } from "@mantine/notifications";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { Dispatch, SetStateAction, useState } from "react";
+import { useQuery } from "react-query";
+import { Sun, MoonStars, Power } from "tabler-icons-react";
 
 const Header = ({
   dark,
@@ -24,6 +30,32 @@ const Header = ({
   toggleColorScheme: (colorScheme?: ColorScheme | undefined) => void;
 }) => {
   const theme = useMantineTheme();
+  const { push } = useRouter();
+  const [logout, setLogout] = useState(false);
+  const logoutApi = useQuery({
+    queryKey: [QueryKey.Logout],
+    queryFn: () => axios.get("/api/auth/signout"),
+    enabled: logout === true,
+    onSuccess: () => {
+      notifications.show({
+        color: "green",
+        title: "Signout",
+        message: "User signed out successfully",
+      });
+      push("/signin");
+    },
+    onError(error: any) {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
+  });
+  console.log(logout, "logout");
+  const logoutHandler = () => {
+    setLogout(true);
+  };
   return (
     <MantineHeader height={{ base: 50, md: 70 }} p="md">
       <Flex
@@ -53,14 +85,21 @@ const Header = ({
             {" "}
             Todo-Next{" "}
           </Text>
-          <ActionIcon
-            variant="outline"
-            color={dark ? "yellow" : "blue"}
-            onClick={() => toggleColorScheme()}
-            title="Toggle color scheme"
-          >
-            {dark ? <Sun size="1.1rem" /> : <MoonStars size="1.1rem" />}
-          </ActionIcon>
+          <Flex gap={"md"}>
+            <ActionIcon
+              variant="outline"
+              color={dark ? "yellow" : "blue"}
+              onClick={() => toggleColorScheme()}
+              title="Toggle color scheme"
+            >
+              {dark ? <Sun size="1.1rem" /> : <MoonStars size="1.1rem" />}
+            </ActionIcon>
+            <Tooltip label="Logout">
+              <ActionIcon onClick={logoutHandler}>
+                <Power />
+              </ActionIcon>
+            </Tooltip>
+          </Flex>
         </Flex>
       </Flex>
     </MantineHeader>
