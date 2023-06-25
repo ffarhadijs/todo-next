@@ -23,10 +23,6 @@ const todoUserSchema = new Schema({
     type: String,
     required: true,
   },
-  avatar: {
-    type: String,
-    required: false,
-  },
   todos: {
     type: [{ title: String, status: String }],
     required: false,
