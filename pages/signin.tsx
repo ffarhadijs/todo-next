@@ -13,8 +13,14 @@ import {
 import { isEmail, isNotEmpty } from "@mantine/form";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { UserType } from "@/types/user.type";
+import { notifications } from "@mantine/notifications";
+import { useRouter } from "next/router";
 
 const Signin = () => {
+  const { push } = useRouter();
   const theme = useMantineTheme();
   const form = useForm({
     initialValues: {
@@ -27,9 +33,33 @@ const Signin = () => {
     },
   });
 
+  const { mutate, isLoading } = useMutation<
+    Record<string, string>,
+    unknown,
+    UserType
+  >({
+    mutationFn: () => axios.post("/api/signin", form.values),
+    onSuccess: () => {
+      notifications.show({
+        color: "green",
+        title: "Signin",
+        message: "User signed in successfully!",
+      });
+      push("/dashboard");
+    },
+    onError: (error: any) => {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
+  });
   const cancelHandler = () => {};
 
-  const submitHandler = () => {};
+  const submitHandler = (data: UserType) => {
+    mutate(data);
+  };
   return (
     <Flex
       justify={"center"}
@@ -75,7 +105,7 @@ const Signin = () => {
           <Button onClick={cancelHandler} color="red">
             Cancel
           </Button>
-          <Button type="submit" color="teal">
+          <Button type="submit" color="teal" loading={isLoading}>
             Signin
           </Button>
         </Group>
