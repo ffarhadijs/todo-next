@@ -37,25 +37,32 @@ const Signup = () => {
       ),
     },
   });
-  const { mutateAsync, isLoading, isError } = useMutation<
+  const { mutate, isLoading } = useMutation<
     Record<string, string>,
     unknown,
     UserType
   >({
     mutationFn: () => axios.post("/api/signup", form.values),
+    onSuccess: () => {
+      notifications.show({
+        color: "green",
+        title: "Signup",
+        message: "User signed up successfully!",
+      });
+      push("/signin");
+    },
+    onError(error: any) {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
   });
   const cancelHandler = () => {};
 
   const submitHandler = (data: UserType) => {
-    mutateAsync(data)
-      .then(() =>
-        notifications.show({
-          color: "green",
-          title: "Signup",
-          message: "User signed up successfully!",
-        })
-      )
-      .then(() => push("/signin"));
+    mutate(data);
   };
   return (
     <Flex
