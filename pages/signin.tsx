@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -18,10 +18,13 @@ import axios from "axios";
 import { UserType } from "@/types/user.type";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 const Signin = () => {
   const { push } = useRouter();
   const theme = useMantineTheme();
+  const token = Cookies.get("token");
+
   const form = useForm({
     initialValues: {
       email: "",
@@ -55,11 +58,14 @@ const Signin = () => {
       });
     },
   });
-  const cancelHandler = () => {};
 
   const submitHandler = (data: UserType) => {
     mutate(data);
   };
+  useEffect(() => {
+    token && push("/dashboard");
+  }, []);
+
   return (
     <Flex
       justify={"center"}
@@ -102,9 +108,6 @@ const Signin = () => {
           {...form.getInputProps("password")}
         />
         <Group position="right" spacing={"md"} my={"xl"}>
-          <Button onClick={cancelHandler} color="red">
-            Cancel
-          </Button>
           <Button type="submit" color="teal" loading={isLoading}>
             Signin
           </Button>
