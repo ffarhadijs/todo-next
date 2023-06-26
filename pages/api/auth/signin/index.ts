@@ -53,7 +53,7 @@ export default async function handler(
       serialize("token", token, {
         maxAge: 24 * 60 * 60,
         path: "/",
-        httpOnly: true,
+        httpOnly: false,
       })
     )
     .json({
