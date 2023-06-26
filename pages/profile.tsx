@@ -1,13 +1,9 @@
 import { QueryKey } from "@/enums/queryKey.enum";
+import TodoUser from "@/models/TodoUser";
 import { UpdateUser } from "@/types/updateUser.type";
-import {
-  Box,
-  Button,
-  Center,
-  Group,
-  Loader,
-  TextInput,
-} from "@mantine/core";
+import { connectDB } from "@/utils/connectDB";
+import verifyToken from "@/utils/verifyToken";
+import { Box, Button, Center, Group, Loader, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
@@ -104,3 +100,21 @@ const Profile = () => {
 };
 
 export default Profile;
+
+export async function getServerSideProps(context: any) {
+  const { token } = context.req.cookies;
+  const secretKey = process.env.SECRET_KEY;
+
+  const { email } = await verifyToken(token, secretKey!);
+  if (!email) {
+    return {
+      redirect: { destination: "/signin", permanent: false },
+    };
+  } else {
+    return {
+      props: {
+        email,
+      },
+    };
+  }
+}
