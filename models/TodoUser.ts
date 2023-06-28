@@ -24,13 +24,38 @@ const todoUserSchema = new Schema({
     required: true,
   },
   todos: {
-    type: [{ title: String, status: String }],
+    type: [
+      {
+        task: {
+          id: { type: String },
+          list: [{ title: { type: String }, status: { type: String } }],
+        },
+      },
+    ],
     required: false,
-    default: [],
+    default: [
+      {
+        task: {
+          id: "todo",
+          list: [],
+        },
+      },
+      {
+        task: {
+          id: "doing",
+          list: [],
+        },
+      },
+      {
+        task: {
+          id: "done",
+          list: [],
+        },
+      },
+    ],
   },
 });
 
 const TodoUser = models.TodoUser || model<UserType>("TodoUser", todoUserSchema);
-
 
 export default TodoUser;
