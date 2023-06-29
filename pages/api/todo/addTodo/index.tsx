@@ -46,5 +46,5 @@ export default async function handler(
 
   todo.task.list.push({ title, status });
   await user.save();
-  res.status(201).json({ status: "Success", message: "Todo created!" });
+  res.status(201).json({ status: "Success", message: "Task has been created successfully!" });
 }
