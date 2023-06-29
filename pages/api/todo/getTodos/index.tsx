@@ -36,5 +36,18 @@ export default async function handler(
 
   const user = await TodoUser.findOne({ email });
 
-  res.status(201).json({ status: "Success", data: user.todos });
+  const serializedTodos = user.todos.map((todo: any) => {
+    return {
+      columnId: todo._id.toString(),
+      id: todo.task.id,
+      list: todo.task.list.map((taskItem: any) => {
+        return {
+          title: taskItem.title,
+          id: taskItem._id.toString(),
+        };
+      }),
+    };
+  });
+
+  res.status(201).json({ status: "Success", data: serializedTodos });
 }
