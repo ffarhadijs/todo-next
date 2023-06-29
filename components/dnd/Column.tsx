@@ -1,55 +1,128 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Item from "./Item";
-import { Flex, Box, TextInput, Button } from "@mantine/core";
+import {
+  Flex,
+  Box,
+  TextInput,
+  ActionIcon,
+  useMantineTheme,
+  Tooltip,
+} from "@mantine/core";
 import { Droppable } from "react-beautiful-dnd";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import axios from "axios";
+import { useMutation, useQueryClient } from "react-query";
+import { AiOutlinePlus, AiFillSave, AiOutlineMinus } from "react-icons/ai";
+import { IoMdDoneAll } from "react-icons/io";
+import { notifications } from "@mantine/notifications";
 
 interface ColumnProps {
-  col: any
+  col: any;
 }
 
 const Column: React.FC<ColumnProps> = ({ col }) => {
+  const theme = useMantineTheme();
+  const [show, setShow] = useState(false);
   const form = useForm({
     initialValues: {
       title: "",
     },
+    validate: {
+      title: isNotEmpty("You should input your task"),
+    },
   });
-
+  const title = form.values.title;
+  const status = col.id;
+  const data = {
+    title,
+    status,
+  };
+  const useQuery = useQueryClient();
+  const { mutate, isLoading } = useMutation({
+    mutationFn: () => axios.post("/api/todo/addTodo", data),
+    onSuccess: () => {
+      useQuery.invalidateQueries();
+      form.reset();
+      notifications.show({
+        color: "green",
+        title: "Add Task",
+        message: "Task has been dded successfully",
+      });
+    },
+  });
   const submitHandler = (formData: any) => {
     const title = formData.title;
     const status = col.id;
-    axios.post("/api/todo/addTodo", {
-      title,
-      status,
-    });
+    mutate(title, status);
   };
+
+  const addInputHandler = () => {
+    setShow(!show);
+    form.reset();
+  };
+
   return (
     <Droppable droppableId={col.id}>
       {(provided) => (
         <Flex direction={"column"} py={"24px"} px={"16px"} mt={"8px"}>
-          <h2 style={{ margin: "0", padding: "0 16px" }}>{col.id}</h2>
+          <Flex direction={"row"} align={"center"} justify={"space-between"}>
+            <h2 style={{ margin: "0", padding: "0 16px" }}>{col.id}</h2>
+            <Tooltip label={`${show ? "Hide" : "Show"} add input`} fz="xs">
+              <ActionIcon onClick={addInputHandler}>
+                {!show ? (
+                  <AiOutlinePlus size={"25px"} />
+                ) : (
+                  <AiOutlineMinus size={"25px"} />
+                )}
+              </ActionIcon>
+            </Tooltip>
+          </Flex>
           <Box
             {...provided.droppableProps}
             ref={provided.innerRef}
             sx={{
-              backgroundColor: "green",
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[5]
+                  : theme.colors.gray[2],
               borderRadius: 8,
               padding: 16,
               display: "flex",
               flexDirection: "column",
               flexGrow: 1,
               marginTop: 8,
+              border: "1px dashed gray",
             }}
           >
-            {col.list?.map((item:any, index:any) => (
-              <Item key={item.title} item={item} index={index} />
+            {col.list?.map((item: any, index: any) => (
+              <Item
+                key={item.title}
+                item={item}
+                index={index}
+                column={col.id}
+              />
             ))}
             {provided.placeholder}
-            <form onSubmit={form.onSubmit(submitHandler)}>
-              <TextInput {...form.getInputProps("title")} />
-              <Button type="submit"> add </Button>
-            </form>
+            {show ? (
+              <Box
+                component="form"
+                onSubmit={form.onSubmit(submitHandler)}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "start",
+                  justifyContent: "space-between",
+                  marginTop: "40px",
+                }}
+              >
+                <TextInput {...form.getInputProps("title")} label="Add Task" />
+                <Tooltip label="Save" fz={"xs"}>
+                  <ActionIcon type="submit" loading={isLoading} mt="25px">
+                    <IoMdDoneAll size="25px" color="green" />{" "}
+                  </ActionIcon>
+                </Tooltip>
+              </Box>
+            ) : null}
           </Box>
         </Flex>
       )}
