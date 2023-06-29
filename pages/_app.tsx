@@ -30,18 +30,18 @@ export default function App({ Component, pageProps }: AppProps) {
         withGlobalStyles
         withNormalizeCSS
       >
-        <Notifications/>
-        <QueryClientProvider client={queryClient}>
-          <Hydrate state={pageProps.dehydratedState}>
-            {notFound || signin || signup ? (
-              <Component {...pageProps} />
-            ) : (
-              <Layout>
+          <Notifications />
+          <QueryClientProvider client={queryClient}>
+            <Hydrate state={pageProps.dehydratedState}>
+              {notFound || signin || signup ? (
                 <Component {...pageProps} />
-              </Layout>
-            )}
-          </Hydrate>
-        </QueryClientProvider>
+              ) : (
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              )}
+            </Hydrate>
+          </QueryClientProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
