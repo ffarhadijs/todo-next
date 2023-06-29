@@ -1,6 +1,6 @@
 import Column from "@/components/dnd/Column";
 import verifyToken from "@/utils/verifyToken";
-import { Grid } from "@mantine/core";
+import { Grid, ScrollArea, Center, Loader } from "@mantine/core";
 import { useState } from "react";
 import {
   DragDropContext,
@@ -9,9 +9,21 @@ import {
 } from "react-beautiful-dnd";
 import { connectDB } from "@/utils/connectDB";
 import TodoUser from "@/models/TodoUser";
+import axios from "axios";
+import { useQuery } from "react-query";
+import { QueryKey } from "@/enums/queryKey.enum";
 
-export default function Dashboard({ tasks }: { tasks: any }) {
-  const [columns, setColumns] = useState<any>(tasks);
+export default function Dashboard() {
+  const [columns, setColumns] = useState<any>();
+
+  const { data, isLoading } = useQuery({
+    queryKey: QueryKey.getTodos,
+    queryFn: () => axios.get("/api/todo/getTodos"),
+    onSuccess: (data: any) => {
+      setColumns(data?.data?.data);
+    },
+  });
+
   const onDragEnd = ({ source, destination }: DropResult) => {
     // Make sure we have a valid destination
     if (destination === undefined || destination === null) return null;
@@ -24,8 +36,8 @@ export default function Dashboard({ tasks }: { tasks: any }) {
       return null;
 
     // Set start and end variables
-    const start = columns.find((item: any) => item.id === source.droppableId);
-    const end = columns.find(
+    const start = columns?.find((item: any) => item.id === source.droppableId);
+    const end = columns?.find(
       (item: any) => item.id === destination.droppableId
     );
 
@@ -36,6 +48,7 @@ export default function Dashboard({ tasks }: { tasks: any }) {
       const newList = start?.list?.filter(
         (_: any, idx: number) => idx !== source.index
       );
+
       // Then insert the item at the right location
       newList?.splice(destination.index, 0, start.list[source.index]);
 
@@ -45,15 +58,15 @@ export default function Dashboard({ tasks }: { tasks: any }) {
         id: start?.id,
         list: newList,
       };
-
+      const id = start.id;
       // Update the state
       const newColumn = [...columns];
-      const columnIndex = columns.findIndex(
+      const columnIndex = columns?.findIndex(
         (item: any) => item.id === source.droppableId
       );
       newColumn[columnIndex] = newCol;
       setColumns(newColumn);
-
+      axios.post("/api/todo/updateColumn", { newList, id });
       return null;
     } else {
       // If start is different from end, we need to update multiple columns
@@ -68,7 +81,7 @@ export default function Dashboard({ tasks }: { tasks: any }) {
         id: start.id,
         list: newStartList,
       };
-
+      const startId = start.id;
       // Make a new end list array
       const newEndList = end.list;
 
@@ -81,13 +94,14 @@ export default function Dashboard({ tasks }: { tasks: any }) {
         id: end.id,
         list: newEndList,
       };
-
+      const endId = end.id;
       // Update the state
       setColumns((state: any) => ({
         ...state,
         [newStartCol.id]: newStartCol,
         [newEndCol.id]: newEndCol,
       }));
+
       const newColumn = [...columns];
       const newStartColIndex = columns.findIndex(
         (item: any) => item.id === source.droppableId
@@ -98,6 +112,12 @@ export default function Dashboard({ tasks }: { tasks: any }) {
       newColumn[newStartColIndex] = newStartCol;
       newColumn[newEndColIndex] = newEndCol;
       setColumns(newColumn);
+      axios.post("/api/todo/updateColumns", {
+        newStartList,
+        newEndList,
+        startId,
+        endId,
+      });
 
       return null;
     }
@@ -105,13 +125,21 @@ export default function Dashboard({ tasks }: { tasks: any }) {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Grid my={"10vh"} mx={"auto"} w={"80%"} h={"80vh"} sx={{ gap: "8px" }}>
-        {columns!.map((col: any) => (
-          <Grid.Col span={4} key={col.columnId}>
-            <Column col={col} key={col.id} />
-          </Grid.Col>
-        ))}
-      </Grid>
+      <ScrollArea h={"80vh"} type="auto" w={"100%"} offsetScrollbars>
+        {isLoading ? (
+          <Center>
+            <Loader />
+          </Center>
+        ) : (
+          <Grid mx={"auto"} w={"1000px"} sx={{ gap: "8px" }}>
+            {columns?.map((col: any) => (
+              <Grid.Col span={"auto"} key={col.columnId}>
+                <Column col={col} key={col.id} />
+              </Grid.Col>
+            ))}
+          </Grid>
+        )}
+      </ScrollArea>
     </DragDropContext>
   );
 }
@@ -123,18 +151,6 @@ export async function getServerSideProps(context: any) {
   resetServerContext();
   const { email } = await verifyToken(token, secretKey!);
   const user = await TodoUser.findOne({ email });
-  const serializedTodos = user.todos.map((todo: any) => {
-    return {
-      columnId: todo._id.toString(),
-      id: todo.task.id,
-      list: todo.task.list.map((taskItem: any) => {
-        return {
-          title: taskItem.title,
-          status: taskItem.status,
-        };
-      }),
-    };
-  });
 
   if (!email) {
     return {
@@ -144,7 +160,6 @@ export async function getServerSideProps(context: any) {
     return {
       props: {
         email,
-        tasks: serializedTodos,
       },
     };
   }
