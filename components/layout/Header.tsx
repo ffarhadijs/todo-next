@@ -52,7 +52,7 @@ const Header = ({
       });
     },
   });
-  console.log(logout, "logout");
+
   const logoutHandler = () => {
     setLogout(true);
   };
