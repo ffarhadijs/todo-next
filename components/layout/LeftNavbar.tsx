@@ -1,13 +1,10 @@
 import {
   Navbar,
-  Divider,
   UnstyledButton,
   Group,
-  ActionIcon,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { Lock, UserCircle } from "tabler-icons-react";
 const LeftNavbar = ({ opened }: { opened: boolean }) => {
