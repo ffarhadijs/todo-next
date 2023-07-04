@@ -1,4 +1,4 @@
-import { QueryKey } from "@/enums/queryKey.enum";
+import { useGetUser } from "@/hooks/auth/auth.hooks";
 import {
   Text,
   MediaQuery,
@@ -14,8 +14,6 @@ import {
   Center,
   Loader,
 } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useQuery } from "react-query";
@@ -35,31 +33,12 @@ const Header = ({
   const theme = useMantineTheme();
   const { push } = useRouter();
   const [logout, setLogout] = useState(false);
-  const { data, isLoading } = useQuery({
-    queryKey: [QueryKey.GetUser],
-    queryFn: () => axios.get("/api/auth/getUser"),
+  const { data, isLoading } = useGetUser({
     refetchOnMount: "always",
   });
 
   const logoutApi = useQuery({
-    queryKey: [QueryKey.Logout],
-    queryFn: () => axios.get("/api/auth/signout"),
-    enabled: logout === true,
-    onSuccess: () => {
-      notifications.show({
-        color: "green",
-        title: "Signout",
-        message: "User signed out successfully",
-      });
-      push("/signin");
-    },
-    onError(error: any) {
-      notifications.show({
-        color: "red",
-        title: "Error",
-        message: error?.response?.data?.message,
-      });
-    },
+    enabled: logout,
   });
 
   const logoutHandler = () => {
