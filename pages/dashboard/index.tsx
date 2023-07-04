@@ -8,20 +8,25 @@ import {
   resetServerContext,
 } from "react-beautiful-dnd";
 import { connectDB } from "@/utils/connectDB";
-import TodoUser from "@/models/TodoUser";
 import axios from "axios";
-import { useQuery } from "react-query";
-import { QueryKey } from "@/enums/queryKey.enum";
+import { useGetTasks } from "@/hooks/tasks/tasks.hooks";
+import { useMutation } from "react-query";
 
 export default function Dashboard() {
   const [columns, setColumns] = useState<any>();
 
-  const { data, isLoading } = useQuery({
-    queryKey: QueryKey.getTodos,
-    queryFn: () => axios.get("/api/todo/getTodos"),
+  const { isLoading } = useGetTasks({
     onSuccess: (data: any) => {
       setColumns(data?.data?.data);
     },
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: (data) => axios.post("/api/task/updateColumn", data),
+  });
+
+  const { mutate: updateColumnsMutate } = useMutation({
+    mutationFn: (data) => axios.post("/api/task/updateColumns", data),
   });
 
   const onDragEnd = ({ source, destination }: DropResult) => {
@@ -66,7 +71,8 @@ export default function Dashboard() {
       );
       newColumn[columnIndex] = newCol;
       setColumns(newColumn);
-      axios.post("/api/todo/updateColumn", { newList, id });
+      const data = { newList, id };
+      mutate(data as any);
       return null;
     } else {
       // If start is different from end, we need to update multiple columns
@@ -112,12 +118,15 @@ export default function Dashboard() {
       newColumn[newStartColIndex] = newStartCol;
       newColumn[newEndColIndex] = newEndCol;
       setColumns(newColumn);
-      axios.post("/api/todo/updateColumns", {
+
+      const data = {
         newStartList,
         newEndList,
         startId,
         endId,
-      });
+      };
+
+      updateColumnsMutate(data as any);
 
       return null;
     }
@@ -150,7 +159,6 @@ export async function getServerSideProps(context: any) {
   await connectDB();
   resetServerContext();
   const { email } = await verifyToken(token, secretKey!);
-  const user = await TodoUser.findOne({ email });
 
   if (!email) {
     return {
