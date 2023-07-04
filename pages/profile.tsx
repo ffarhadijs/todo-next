@@ -1,60 +1,34 @@
-import { QueryKey } from "@/enums/queryKey.enum";
-import TodoUser from "@/models/TodoUser";
+import { useGetUser, useUpdateProfile } from "@/hooks/auth/auth.hooks";
 import { UpdateUser } from "@/types/updateUser.type";
-import { connectDB } from "@/utils/connectDB";
 import verifyToken from "@/utils/verifyToken";
 import { Box, Button, Center, Group, Loader, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import axios from "axios";
 import React from "react";
-import { useMutation, useQueryClient, useQuery } from "react-query";
 
 const Profile = () => {
-  const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery({
-    queryKey: [QueryKey.GetUser],
-    queryFn: () => axios.get("/api/auth/getUser"),
-    onSuccess: (data) => {
+  const { isLoading } = useGetUser({
+    onSuccess: (data: any) => {
       form.setFieldValue("email", data.data.data.email);
       form.setFieldValue("firstName", data.data.data?.firstName);
       form.setFieldValue("lastName", data.data.data?.lastName);
     },
-    refetchOnMount: "always",
   });
 
-  const { mutate, isLoading: isUpdating } = useMutation<
-    Record<string, string>,
-    unknown,
-    UpdateUser
-  >({
-    mutationFn: () => axios.post("/api/auth/updateProfile", form.values),
-    onSuccess: () => {
-      notifications.show({
-        color: "green",
-        title: "Update",
-        message: "User data updated successfully",
-      });
-      queryClient.invalidateQueries();
-    },
-    onError(error: any) {
-      notifications.show({
-        color: "red",
-        title: "Error",
-        message: error?.response?.data?.message,
-      });
-    },
-  });
   const form = useForm({
     initialValues: {
       firstName: "",
-      email: data?.data?.data?.email,
+      email: "",
       lastName: "",
     },
   });
+  const { mutate, isLoading: isUpdating } = useUpdateProfile(
+    form.values.firstName!,
+    form.values.lastName!,
+    form.values.email!
+  );
 
   const submitHandler = (data: UpdateUser) => {
-    mutate(data);
+    mutate(data as any);
   };
   return (
     <Box

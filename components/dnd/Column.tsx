@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Item from "./Item";
 import {
   Flex,
@@ -10,11 +10,11 @@ import {
 } from "@mantine/core";
 import { Droppable } from "react-beautiful-dnd";
 import { isNotEmpty, useForm } from "@mantine/form";
-import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
-import { AiOutlinePlus, AiFillSave, AiOutlineMinus } from "react-icons/ai";
+import { useQueryClient } from "react-query";
+import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { IoMdDoneAll } from "react-icons/io";
 import { notifications } from "@mantine/notifications";
+import { useAddTask } from "@/hooks/tasks/tasks.hooks";
 
 interface ColumnProps {
   col: any;
@@ -38,8 +38,7 @@ const Column: React.FC<ColumnProps> = ({ col }) => {
     status,
   };
   const useQuery = useQueryClient();
-  const { mutate, isLoading } = useMutation({
-    mutationFn: () => axios.post("/api/todo/addTodo", data),
+  const { mutate, isLoading } = useAddTask(data, {
     onSuccess: () => {
       useQuery.invalidateQueries();
       form.reset();
@@ -50,6 +49,7 @@ const Column: React.FC<ColumnProps> = ({ col }) => {
       });
     },
   });
+
   const submitHandler = (formData: any) => {
     const title = formData.title;
     const status = col.id;

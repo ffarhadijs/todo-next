@@ -12,20 +12,20 @@ import {
 } from "@mantine/core";
 import { MdDeleteForever, MdEditDocument } from "react-icons/md";
 import { useDisclosure } from "@mantine/hooks";
-import ConfirmDelete from "../confirmDelete";
+import ConfirmDelete from "../confirmDelete/ConfirmDelete";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { MdEditOff } from "react-icons/md";
 import { IoMdDoneAll } from "react-icons/io";
-import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
+import { useQueryClient } from "react-query";
 import { notifications } from "@mantine/notifications";
+import { useEditTask } from "@/hooks/tasks/tasks.hooks";
 
 interface ItemProps {
   item: any;
   index: number;
   column: any;
 }
-const Item = React.memo(({ item, index, column }: ItemProps) => {
+const Item = ({ item, index, column }: ItemProps) => {
   const [edit, setEdit] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
   const theme = useMantineTheme();
@@ -43,9 +43,7 @@ const Item = React.memo(({ item, index, column }: ItemProps) => {
 
   const title = form.values.title;
 
-  const { mutate } = useMutation({
-    mutationFn: () =>
-      axios.patch(`/api/todo/editTodo/${column}`, { itemId, title }),
+  const { mutate } = useEditTask(column, itemId, title, {
     onSuccess: () => {
       queryClient.invalidateQueries();
       notifications.show({
@@ -154,6 +152,6 @@ const Item = React.memo(({ item, index, column }: ItemProps) => {
       </Draggable>
     </>
   );
-});
+};
 
 export default Item;

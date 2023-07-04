@@ -1,9 +1,8 @@
+import { useChangePassword } from "@/hooks/auth/auth.hooks";
 import { ChangePassword } from "@/types/changePassword.type";
 import { Box, Button, Group, PasswordInput } from "@mantine/core";
 import { isNotEmpty, matchesField, useForm } from "@mantine/form";
-import axios from "axios";
 import React from "react";
-import { useMutation } from "react-query";
 
 const ChangePassword = () => {
   const form = useForm<ChangePassword>({
@@ -15,23 +14,23 @@ const ChangePassword = () => {
     validate: {
       oldPassword: isNotEmpty("You should input your old password"),
       newPassword: isNotEmpty("You should input your new password"),
-      confirmPassword:  matchesField('newPassword', 'Passwords are not the same'),
+      confirmPassword: matchesField(
+        "newPassword",
+        "Passwords are not the same"
+      ),
     },
   });
-  const oldPassword = form.values.oldPassword;
-  const newPassword = form.values.newPassword;
-  const confirmPassword = form.values.confirmPassword;
-  const { mutate } = useMutation({
-    mutationFn: () =>
-      axios.patch("/api/auth/change-password", {
-        oldPassword,
-        newPassword,
-        confirmPassword,
-      }),
-  });
+
+  const { mutate } = useChangePassword(
+    form.values.oldPassword,
+    form.values.newPassword,
+    form.values.confirmPassword
+  );
+  
   const submitHandler = (data: any) => {
     mutate(data);
   };
+
   return (
     <Box
       component="form"

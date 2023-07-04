@@ -14,11 +14,9 @@ import { isEmail, isNotEmpty, matchesField } from "@mantine/form";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
 import { UserType } from "@/types/user.type";
-import axios from "axios";
-import { useMutation } from "react-query";
-import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
+import { useSignup } from "@/hooks/auth/auth.hooks";
 
 const Signup = () => {
   const token = Cookies.get("token");
@@ -39,31 +37,14 @@ const Signup = () => {
       ),
     },
   });
-  const { mutate, isLoading } = useMutation<
-    Record<string, string>,
-    unknown,
-    UserType
-  >({
-    mutationFn: () => axios.post("/api/auth/signup", form.values),
-    onSuccess: () => {
-      notifications.show({
-        color: "green",
-        title: "Signup",
-        message: "User signed up successfully!",
-      });
-      push("/signin");
-    },
-    onError(error: any) {
-      notifications.show({
-        color: "red",
-        title: "Error",
-        message: error?.response?.data?.message,
-      });
-    },
-  });
+  const { mutate, isLoading } = useSignup(
+    form.values.email,
+    form.values.password,
+    form.values.confirmPassword
+  );
 
   const submitHandler = (data: UserType) => {
-    mutate(data);
+    mutate(data as any);
   };
 
   useEffect(() => {
