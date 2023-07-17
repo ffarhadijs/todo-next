@@ -99,6 +99,13 @@ export const useGetUser = (options?: UseQueryOptions) => {
   return useQuery<any,any>({
     queryKey: [QueryKey.GetUser],
     queryFn: () => axios.get("/api/auth/getUser"),
+    onError: (error: any) => {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
     refetchOnMount: "always",
     ...options,
   });

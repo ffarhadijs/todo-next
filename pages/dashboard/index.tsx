@@ -5,12 +5,14 @@ import { useState } from "react";
 import {
   DragDropContext,
   DropResult,
+  Droppable,
   resetServerContext,
 } from "react-beautiful-dnd";
 import { connectDB } from "@/utils/connectDB";
 import axios from "axios";
 import { useGetTasks } from "@/hooks/tasks/tasks.hooks";
 import { useMutation } from "react-query";
+import { notifications } from "@mantine/notifications";
 
 export default function Dashboard() {
   const [columns, setColumns] = useState<any>();
@@ -23,10 +25,24 @@ export default function Dashboard() {
 
   const { mutate } = useMutation({
     mutationFn: (data) => axios.post("/api/task/updateColumn", data),
+    onError: (error: any) => {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
   });
 
   const { mutate: updateColumnsMutate } = useMutation({
     mutationFn: (data) => axios.post("/api/task/updateColumns", data),
+    onError: (error: any) => {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
   });
 
   const onDragEnd = ({ source, destination }: DropResult) => {
