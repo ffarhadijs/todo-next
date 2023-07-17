@@ -6,10 +6,11 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useRouter } from "next/router";
-import { Lock, UserCircle } from "tabler-icons-react";
+import { Dashboard, Lock, UserCircle } from "tabler-icons-react";
 const LeftNavbar = ({ opened }: { opened: boolean }) => {
-  const { push } = useRouter();
+  const { push, pathname } = useRouter();
   const theme = useMantineTheme();
+
   return (
     <Navbar
       p={"md"}
@@ -22,14 +23,40 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
     >
       <Navbar.Section grow>
         <UnstyledButton
+          onClick={() => push("/dashboard")}
+          w="100%"
+          my="xs"
+          sx={{
+            backgroundColor:
+              theme.colorScheme === "dark"
+                ? pathname==="/dashboard"? theme.colors.dark[4] : theme.colors.dark[6]
+                : pathname==="/dashboard"? theme.colors.gray[4] : theme.colors.gray[2],
+            padding: "10px",
+            borderRadius: "10px",
+            transition: "background-color 0.3s ease-in",
+            "&:hover": {
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[4]
+                  : theme.colors.gray[4],
+              transition: "background-color 0.3s ease-in",
+            },
+          }}
+        >
+          <Group>
+            <Dashboard />
+            <Text>Dashboard</Text>
+          </Group>
+        </UnstyledButton>
+        <UnstyledButton
           onClick={() => push("/profile")}
           w="100%"
           my="xs"
           sx={{
             backgroundColor:
               theme.colorScheme === "dark"
-                ? theme.colors.dark[6]
-                : theme.colors.gray[2],
+                ? pathname==="/profile"? theme.colors.dark[4] : theme.colors.dark[6]
+                : pathname==="/profile"? theme.colors.gray[4] : theme.colors.gray[2],
             padding: "10px",
             borderRadius: "10px",
             transition: "background-color 0.3s ease-in",
@@ -54,9 +81,9 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           sx={{
             backgroundColor:
               theme.colorScheme === "dark"
-                ? theme.colors.dark[6]
-                : theme.colors.gray[2],
-            padding: "10px",
+              ? pathname==="/change-password"? theme.colors.dark[4] : theme.colors.dark[6]
+              : pathname==="/change-password"? theme.colors.gray[4] : theme.colors.gray[2],
+              padding: "10px",
             borderRadius: "10px",
             transition: "background-color 0.3s ease-in",
             "&:hover": {
