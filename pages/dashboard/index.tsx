@@ -1,11 +1,22 @@
 import Column from "@/components/dnd/Column";
 import verifyToken from "@/utils/verifyToken";
-import { Grid, ScrollArea, Center, Loader } from "@mantine/core";
+import {
+  Grid,
+  ScrollArea,
+  Center,
+  Loader,
+  Button,
+  Modal,
+  Title,
+  Flex,
+  useMantineTheme,
+  ActionIcon,
+  Divider,
+} from "@mantine/core";
 import { useState } from "react";
 import {
   DragDropContext,
   DropResult,
-  Droppable,
   resetServerContext,
 } from "react-beautiful-dnd";
 import { connectDB } from "@/utils/connectDB";
@@ -13,9 +24,15 @@ import axios from "axios";
 import { useGetTasks } from "@/hooks/tasks/tasks.hooks";
 import { useMutation } from "react-query";
 import { notifications } from "@mantine/notifications";
+import { FiPlus } from "react-icons/fi";
+import { useDisclosure } from "@mantine/hooks";
+import AddOrEditCard from "@/components/modals/addOrEditCard/AddOrEditCard";
 
 export default function Dashboard() {
+  const theme = useMantineTheme();
   const [columns, setColumns] = useState<any>();
+  const [opened, { open, close }] = useDisclosure(false);
+  const [card, setCard] = useState();
 
   const { isLoading } = useGetTasks({
     onSuccess: (data: any) => {
@@ -148,20 +165,59 @@ export default function Dashboard() {
     }
   };
 
+  const addCardHandler = () => {
+    open();
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <ScrollArea h={"80vh"} type="auto" w={"100%"} offsetScrollbars>
+      <Modal opened={opened} onClose={close} title="Add Card">
+        <AddOrEditCard close={close} />
+      </Modal>
+      <ScrollArea h={"83vh"} type="auto" w={"100%"} offsetScrollbars>
         {isLoading ? (
           <Center>
             <Loader />
           </Center>
         ) : (
-          <Grid mx={"auto"} w={"1000px"} sx={{ gap: "8px" }}>
+          <Grid mx={"auto"} mt={"20px"} sx={{ gap: "8px", flexWrap: "nowrap" }}>
             {columns?.map((col: any) => (
-              <Grid.Col span={"auto"} key={col.columnId}>
-                <Column col={col} key={col.id} />
+              <Grid.Col span={"auto"} w={"300px"} key={col.columnId}>
+                <Column col={col} key={col.id} card={card} setCard={setCard}/>
               </Grid.Col>
             ))}
+            <Grid.Col span={"auto"} w={"300px"}>
+              <ScrollArea h={"72vh"} offsetScrollbars pb={5}>
+                <Flex
+                  direction={"column"}
+                  py={"16px"}
+                  px={"16px"}
+                  sx={{
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[5]
+                        : theme.colors.gray[2],
+                    borderRadius: 8,
+                    flexGrow: 1,
+                    marginTop: 8,
+                    border: "1px dashed gray",
+                    height: "68vh",
+                  }}
+                >
+                  <Title order={3}> Add Card </Title>
+                  <Divider mt={"xs"} />
+                  <ActionIcon
+                    sx={{
+                      height: "100%",
+                      width: "100%",
+                    }}
+                    onClick={addCardHandler}
+                  >
+                    <FiPlus size={"40px"} />
+                  </ActionIcon>
+                </Flex>
+              </ScrollArea>
+            </Grid.Col>
           </Grid>
         )}
       </ScrollArea>
