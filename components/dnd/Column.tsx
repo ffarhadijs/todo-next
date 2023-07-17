@@ -7,22 +7,37 @@ import {
   ActionIcon,
   useMantineTheme,
   Tooltip,
+  ScrollArea,
+  Title,
+  Menu,
+  Divider,
+  Modal,
 } from "@mantine/core";
 import { Droppable } from "react-beautiful-dnd";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useQueryClient } from "react-query";
-import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { IoMdDoneAll } from "react-icons/io";
 import { notifications } from "@mantine/notifications";
 import { useAddTask } from "@/hooks/tasks/tasks.hooks";
+import { BsThreeDots } from "react-icons/bs";
+import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import AddOrEditCard from "../modals/addOrEditCard/AddOrEditCard";
+import { useDisclosure } from "@mantine/hooks";
+import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
 
 interface ColumnProps {
   col: any;
+  card: any;
+  setCard: any;
 }
 
-const Column: React.FC<ColumnProps> = ({ col }) => {
+const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
   const theme = useMantineTheme();
   const [show, setShow] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [deleteOpened, { open: deleteOpen, close: deleteClose }] =
+    useDisclosure(false);
+
   const form = useForm({
     initialValues: {
       title: "",
@@ -61,72 +76,121 @@ const Column: React.FC<ColumnProps> = ({ col }) => {
     form.reset();
   };
 
+  const editCardHandler = (col: any) => {
+    open();
+    setCard(col);
+  };
+  const deleteCardHandler = (col: any) => {
+    setCard(col);
+    deleteOpen();
+  };
   return (
-    <Droppable droppableId={col.id}>
-      {(provided) => (
-        <Flex direction={"column"} py={"24px"} px={"16px"} mt={"8px"}>
-          <Flex direction={"row"} align={"center"} justify={"space-between"}>
-            <h2 style={{ margin: "0", padding: "0 16px" }}>{col.id}</h2>
-            <Tooltip label={`${show ? "Hide" : "Show"} add input`} fz="xs">
-              <ActionIcon onClick={addInputHandler}>
-                {!show ? (
-                  <AiOutlinePlus size={"25px"} />
-                ) : (
-                  <AiOutlineMinus size={"25px"} />
-                )}
-              </ActionIcon>
-            </Tooltip>
-          </Flex>
-          <Box
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            sx={{
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[5]
-                  : theme.colors.gray[2],
-              borderRadius: 8,
-              padding: 16,
-              display: "flex",
-              flexDirection: "column",
-              flexGrow: 1,
-              marginTop: 8,
-              border: "1px dashed gray",
-            }}
-          >
-            {col.list?.map((item: any, index: any) => (
-              <Item
-                key={item.title}
-                item={item}
-                index={index}
-                column={col.id}
-              />
-            ))}
-            {provided.placeholder}
-            {show ? (
-              <Box
-                component="form"
-                onSubmit={form.onSubmit(submitHandler)}
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "start",
-                  justifyContent: "space-between",
-                  marginTop: "40px",
-                }}
+    <>
+      <Modal
+        opened={opened || deleteOpened}
+        onClose={opened ? close : deleteClose}
+        title={opened ? "Edit Card" : "Delete Card"}
+      >
+        {opened ? (
+          <AddOrEditCard close={close} col={card} />
+        ) : (
+          <ConfirmDelete column={card} close={deleteClose} />
+        )}
+      </Modal>
+      <Droppable droppableId={col.id}>
+        {(provided) => (
+          <ScrollArea h={"72vh"} offsetScrollbars pb={5}>
+            <Flex
+              direction={"column"}
+              p={"16px"}
+              sx={{
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[5]
+                    : theme.colors.gray[2],
+                borderRadius: 8,
+                flexGrow: 1,
+                marginTop: 8,
+                border: "1px dashed gray",
+                minHeight: "68vh",
+                maxWidth: "100%",
+              }}
+            >
+              <Flex
+                direction={"row"}
+                align={"center"}
+                justify={"space-between"}
               >
-                <TextInput {...form.getInputProps("title")} label="Add Task" />
-                <Tooltip label="Save" fz={"xs"}>
-                  <ActionIcon type="submit" loading={isLoading} mt="25px">
-                    <IoMdDoneAll size="25px" color="green" />{" "}
-                  </ActionIcon>
-                </Tooltip>
+                <Title order={3}>{col.id}</Title>
+                <Menu shadow="md">
+                  <Menu.Target>
+                    <ActionIcon>
+                      <BsThreeDots size={"20px"} />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      icon={<MdEdit size={"16px"} />}
+                      onClick={() => editCardHandler(col)}
+                    >
+                      Edit
+                    </Menu.Item>
+                    <Menu.Item
+                      icon={<MdDelete size={"16px"} />}
+                      onClick={() => deleteCardHandler(col)}
+                    >
+                      Delete
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      icon={<MdAdd size={"16px"} />}
+                      onClick={addInputHandler}
+                    >
+                      Add Task
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </Flex>
+              <Divider mt={"xs"} />
+              <Box {...provided.droppableProps} ref={provided.innerRef}>
+                {col.list?.map((item: any, index: any) => (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    column={col.id}
+                  />
+                ))}
+                {provided.placeholder}
+                {show ? (
+                  <Box
+                    component="form"
+                    onSubmit={form.onSubmit(submitHandler)}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "start",
+                      justifyContent: "space-between",
+                      marginTop: "40px",
+                    }}
+                  >
+                    <TextInput
+                      {...form.getInputProps("title")}
+                      label="Add Task"
+                    />
+                    <Tooltip label="Save" fz={"xs"}>
+                      <ActionIcon type="submit" loading={isLoading} mt="25px">
+                        <IoMdDoneAll size="25px" color="green" />{" "}
+                      </ActionIcon>
+                    </Tooltip>
+                  </Box>
+                ) : null}
               </Box>
-            ) : null}
-          </Box>
-        </Flex>
-      )}
-    </Droppable>
+            </Flex>
+          </ScrollArea>
+        )}
+      </Droppable>
+    </>
   );
 };
 
