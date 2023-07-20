@@ -34,7 +34,7 @@ export default function Dashboard() {
   const [opened, { open, close }] = useDisclosure(false);
   const [card, setCard] = useState();
 
-  const { isLoading } = useGetTasks({
+  const { isFetching } = useGetTasks({
     onSuccess: (data: any) => {
       setColumns(data?.data?.data);
     },
@@ -169,13 +169,15 @@ export default function Dashboard() {
     open();
   };
 
+
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Modal opened={opened} onClose={close} title="Add Card">
         <AddOrEditCard close={close} />
       </Modal>
       <ScrollArea h={"83vh"} type="auto" w={"100%"} offsetScrollbars>
-        {isLoading ? (
+        {isFetching ? (
           <Center>
             <Loader />
           </Center>
