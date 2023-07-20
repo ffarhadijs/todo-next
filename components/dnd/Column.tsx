@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import Item from "./Item";
 import {
   Flex,
   Box,
-  TextInput,
   ActionIcon,
   useMantineTheme,
-  Tooltip,
   ScrollArea,
   Title,
   Menu,
@@ -14,16 +12,12 @@ import {
   Modal,
 } from "@mantine/core";
 import { Droppable } from "react-beautiful-dnd";
-import { isNotEmpty, useForm } from "@mantine/form";
-import { useQueryClient } from "react-query";
-import { IoMdDoneAll } from "react-icons/io";
-import { notifications } from "@mantine/notifications";
-import { useAddTask } from "@/hooks/tasks/tasks.hooks";
 import { BsThreeDots } from "react-icons/bs";
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
 import AddOrEditCard from "../modals/addOrEditCard/AddOrEditCard";
 import { useDisclosure } from "@mantine/hooks";
 import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
+import AddOrEditTask from "../modals/addOrEditTask/AddOrEditTask";
 
 interface ColumnProps {
   col: any;
@@ -33,47 +27,14 @@ interface ColumnProps {
 
 const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
   const theme = useMantineTheme();
-  const [show, setShow] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
+  const [taskOpened, { open: taskOpen, close: taskClose }] =
+    useDisclosure(false);
   const [deleteOpened, { open: deleteOpen, close: deleteClose }] =
     useDisclosure(false);
 
-  const form = useForm({
-    initialValues: {
-      title: "",
-    },
-    validate: {
-      title: isNotEmpty("You should input your task"),
-    },
-  });
-  const title = form.values.title;
-  const status = col.id;
-  const data = {
-    title,
-    status,
-  };
-  const useQuery = useQueryClient();
-  const { mutate, isLoading } = useAddTask(data, {
-    onSuccess: () => {
-      useQuery.invalidateQueries();
-      form.reset();
-      notifications.show({
-        color: "green",
-        title: "Add Task",
-        message: "Task has been dded successfully",
-      });
-    },
-  });
-
-  const submitHandler = (formData: any) => {
-    const title = formData.title;
-    const status = col.id;
-    mutate(title, status);
-  };
-
-  const addInputHandler = () => {
-    setShow(!show);
-    form.reset();
+  const addTaskHandler = () => {
+    taskOpen();
   };
 
   const editCardHandler = (col: any) => {
@@ -84,17 +45,20 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
     setCard(col);
     deleteOpen();
   };
+
   return (
     <>
       <Modal
-        opened={opened || deleteOpened}
-        onClose={opened ? close : deleteClose}
-        title={opened ? "Edit Card" : "Delete Card"}
+        opened={opened || deleteOpened || taskOpened}
+        onClose={opened ? close : deleteOpened ? deleteClose : taskClose}
+        title={opened ? "Edit Card" : deleteOpened ? "Delete Card" : "Add Task"}
       >
         {opened ? (
           <AddOrEditCard close={close} col={card} />
-        ) : (
+        ) : deleteOpened ? (
           <ConfirmDelete column={card} close={deleteClose} />
+        ) : (
+          <AddOrEditTask close={taskClose} col={col} />
         )}
       </Modal>
       <Droppable droppableId={col.id}>
@@ -144,7 +108,7 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
                     <Menu.Divider />
                     <Menu.Item
                       icon={<MdAdd size={"16px"} />}
-                      onClick={addInputHandler}
+                      onClick={addTaskHandler}
                     >
                       Add Task
                     </Menu.Item>
@@ -162,29 +126,6 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
                   />
                 ))}
                 {provided.placeholder}
-                {show ? (
-                  <Box
-                    component="form"
-                    onSubmit={form.onSubmit(submitHandler)}
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "start",
-                      justifyContent: "space-between",
-                      marginTop: "40px",
-                    }}
-                  >
-                    <TextInput
-                      {...form.getInputProps("title")}
-                      label="Add Task"
-                    />
-                    <Tooltip label="Save" fz={"xs"}>
-                      <ActionIcon type="submit" loading={isLoading} mt="25px">
-                        <IoMdDoneAll size="25px" color="green" />{" "}
-                      </ActionIcon>
-                    </Tooltip>
-                  </Box>
-                ) : null}
               </Box>
             </Flex>
           </ScrollArea>
