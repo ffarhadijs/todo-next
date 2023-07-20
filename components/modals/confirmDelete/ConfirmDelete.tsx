@@ -65,7 +65,7 @@ const ConfirmDelete = ({ column, itemId, close }: any) => {
       <Text size="md">
         Are you sure to delete this {itemId ? "task" : "card"}?
       </Text>
-      <Group position="right" my="lg">
+      <Group position="right" mt="lg">
         <Button onClick={cancelHandler}>Cancel</Button>
         <Button
           onClick={deleteHandler}

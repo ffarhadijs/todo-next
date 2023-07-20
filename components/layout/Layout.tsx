@@ -14,8 +14,8 @@ function Layout({
   toggleColorScheme,
 }: {
   children: ReactElement<any, any>;
-  colorScheme: ColorScheme;
-  toggleColorScheme: (value?: ColorScheme) => void;
+  colorScheme?: ColorScheme;
+  toggleColorScheme?: (value?: ColorScheme) => void;
 }) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
@@ -38,7 +38,7 @@ function Layout({
           opened={opened}
           setOpened={setOpened}
           dark={dark}
-          toggleColorScheme={toggleColorScheme}
+          toggleColorScheme={toggleColorScheme!}
         />
       }
     >
