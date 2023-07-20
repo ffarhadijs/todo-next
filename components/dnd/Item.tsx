@@ -1,24 +1,18 @@
 import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import {
-  Tooltip,
   Text,
   Flex,
   useMantineTheme,
   ActionIcon,
   Modal,
-  TextInput,
-  Box,
+  Menu,
 } from "@mantine/core";
-import { MdDeleteForever, MdEditDocument } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { useDisclosure } from "@mantine/hooks";
-import ConfirmDelete from "../confirmDelete/ConfirmDelete";
-import { isNotEmpty, useForm } from "@mantine/form";
-import { MdEditOff } from "react-icons/md";
-import { IoMdDoneAll } from "react-icons/io";
-import { useQueryClient } from "react-query";
-import { notifications } from "@mantine/notifications";
-import { useEditTask } from "@/hooks/tasks/tasks.hooks";
+import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
+import { DotsVertical } from "tabler-icons-react";
+import AddOrEditTask from "../modals/addOrEditTask/AddOrEditTask";
 
 interface ItemProps {
   item: any;
@@ -26,58 +20,34 @@ interface ItemProps {
   column: any;
 }
 const Item = ({ item, index, column }: ItemProps) => {
-  const [edit, setEdit] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
+  const [taskOpened, { open: taskOpen, close: taskClose }] =
+    useDisclosure(false);
+
   const theme = useMantineTheme();
-  const queryClient = useQueryClient();
-  const itemId = item.id;
-
-  const form = useForm({
-    initialValues: {
-      title: item.title,
-    },
-    validate: {
-      title: isNotEmpty("You should input your task!"),
-    },
-  });
-
-  const title = form.values.title;
-
-  const { mutate } = useEditTask(column, itemId, title, {
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-      notifications.show({
-        color: "green",
-        title: "Update Task",
-        message: "Task has been updated successfully",
-      });
-      setEdit(false);
-    },
-  });
 
   const removeHandler = () => {
     open();
   };
 
   const editHandler = () => {
-    setEdit(!edit);
+    taskOpen();
   };
-
-  const submitEditHandler = () => {
-    mutate(itemId, title);
-  };
-
-  const cancelEditHandler = () => {
-    setEdit(false);
-    form.reset();
-  };
-
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Delete Task">
-        <ConfirmDelete column={column} itemId={item.id} close={close} />
+      <Modal
+        opened={opened || taskOpened}
+        onClose={opened ? close : taskClose}
+        title={opened ? "Delete Task" : "Edit Task"}
+      >
+        {opened && (
+          <ConfirmDelete column={column} itemId={item.id} close={close} />
+        )}
+        {taskOpened && (
+          <AddOrEditTask close={taskClose} col={column} task={item} />
+        )}
       </Modal>
-      <Draggable draggableId={item.title} index={index}>
+      <Draggable draggableId={item.id} index={index}>
         {(provided) => (
           <Flex
             direction={"row"}
@@ -105,48 +75,28 @@ const Item = ({ item, index, column }: ItemProps) => {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            {!edit ? (
-              <Text>{item.title}</Text>
-            ) : (
-              <Box
-                component="form"
-                onSubmit={form.onSubmit(submitEditHandler)}
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <TextInput {...form.getInputProps("title")} />
-                <Flex>
-                  <Tooltip label="Cancel Edit" fz={"xs"}>
-                    <ActionIcon onClick={cancelEditHandler}>
-                      <MdEditOff size="20px" color="red" />
-                    </ActionIcon>
-                  </Tooltip>
-                  <Tooltip label="Edit Task" fz={"xs"}>
-                    <ActionIcon type="submit">
-                      <IoMdDoneAll size="20px" color="green" />
-                    </ActionIcon>
-                  </Tooltip>
-                </Flex>
-              </Box>
-            )}
-            {!edit && (
-              <Flex>
-                <Tooltip label="Delete Task" fz={"xs"}>
-                  <ActionIcon onClick={removeHandler}>
-                    <MdDeleteForever size="20px" color="red" />
-                  </ActionIcon>
-                </Tooltip>
-                <Tooltip label="Edit Task" fz={"xs"}>
-                  <ActionIcon onClick={editHandler}>
-                    <MdEditDocument size="20px" />
-                  </ActionIcon>
-                </Tooltip>
-              </Flex>
-            )}
+            <Text>{item.title}</Text>
+            <Menu>
+              <Menu.Target>
+                <ActionIcon>
+                  <DotsVertical size={"18px"} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  icon={<MdEdit size={"16px"} />}
+                  onClick={editHandler}
+                >
+                  Edit
+                </Menu.Item>
+                <Menu.Item
+                  icon={<MdDelete size={"16px"} />}
+                  onClick={removeHandler}
+                >
+                  Delete
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Flex>
         )}
       </Draggable>
