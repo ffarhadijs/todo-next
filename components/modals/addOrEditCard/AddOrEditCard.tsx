@@ -34,7 +34,6 @@ export default function AddOrEditCard({
       });
     },
     onError: (error: any) => {
-      close();
       notifications.show({
         color: "red",
         title: "Error",
@@ -56,7 +55,6 @@ export default function AddOrEditCard({
         });
       },
       onError: (error: any) => {
-        close();
         notifications.show({
           color: "red",
           title: "Error",

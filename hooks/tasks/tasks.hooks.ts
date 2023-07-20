@@ -43,12 +43,12 @@ export const useAddTask = (
 export const useEditTask = (
   column: any,
   itemId: any,
-  title: any,
+  data: any,
   options?: UseMutationOptions<unknown, unknown, void, unknown>
 ) => {
   return useMutation({
     mutationFn: () =>
-      axios.patch(`/api/task/editTask/${column}`, { itemId, title }),
+      axios.patch(`/api/task/editTask/${column}`, { itemId, data}),
       onError: (error: any) => {
         notifications.show({
           color: "red",
