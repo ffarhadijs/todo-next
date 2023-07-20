@@ -28,7 +28,15 @@ const todoUserSchema = new Schema({
       {
         task: {
           id: { type: String },
-          list: [{ title: { type: String }, status: { type: String } }],
+          list: [
+            {
+              title: { type: String, required: true },
+              status: { type: String, required: false },
+              description: { type: String, required: false },
+              label: { type: String, required: false },
+              category: { type: String, required: false },
+            },
+          ],
         },
       },
     ],
