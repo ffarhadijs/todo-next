@@ -20,7 +20,16 @@ export default function App({ Component, pageProps }: AppProps) {
   });
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
 
   const notFound = router.pathname === "/404";
   const signin = router.pathname === "/signin";
@@ -41,7 +50,10 @@ export default function App({ Component, pageProps }: AppProps) {
             {notFound || signin || signup ? (
               <Component {...pageProps} />
             ) : (
-              <Layout colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+              <Layout
+                colorScheme={colorScheme}
+                toggleColorScheme={toggleColorScheme}
+              >
                 <Component {...pageProps} />
               </Layout>
             )}
