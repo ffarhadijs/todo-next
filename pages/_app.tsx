@@ -9,10 +9,15 @@ import {
 import { useRouter } from "next/router";
 import { QueryClient, QueryClientProvider, Hydrate } from "react-query";
 import { Notifications } from "@mantine/notifications";
+import { useLocalStorage } from "@mantine/hooks";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: "mantine-color-scheme",
+    defaultValue: "light",
+    getInitialValueInEffect: true,
+  });
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
   const [queryClient] = useState(() => new QueryClient());
@@ -30,18 +35,18 @@ export default function App({ Component, pageProps }: AppProps) {
         withGlobalStyles
         withNormalizeCSS
       >
-          <Notifications />
-          <QueryClientProvider client={queryClient}>
-            <Hydrate state={pageProps.dehydratedState}>
-              {notFound || signin || signup ? (
+        <Notifications />
+        <QueryClientProvider client={queryClient}>
+          <Hydrate state={pageProps.dehydratedState}>
+            {notFound || signin || signup ? (
+              <Component {...pageProps} />
+            ) : (
+              <Layout colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
                 <Component {...pageProps} />
-              ) : (
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              )}
-            </Hydrate>
-          </QueryClientProvider>
+              </Layout>
+            )}
+          </Hydrate>
+        </QueryClientProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
