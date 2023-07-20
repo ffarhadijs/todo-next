@@ -3,16 +3,24 @@ import { useState } from "react";
 import {
   AppShell,
   useMantineTheme,
-  useMantineColorScheme,
+  ColorScheme,
 } from "@mantine/core";
 import Header from "./Header";
 import LeftNavbar from "./LeftNavbar";
 
-function Layout({ children }: { children: ReactElement<any, any> }) {
+function Layout({
+  children,
+  colorScheme,
+  toggleColorScheme,
+}: {
+  children: ReactElement<any, any>;
+  colorScheme: ColorScheme;
+  toggleColorScheme: (value?: ColorScheme) => void;
+}) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
+
   return (
     <AppShell
       styles={{
