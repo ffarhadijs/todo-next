@@ -42,9 +42,15 @@ export default async function handler(
   const columnId = user.todos.find((item: any) => item.task.id === column);
   const todo = columnId.task.list.find((item: any) => item.id === data.itemId);
 
-  todo.title = data.title;
+  todo.title = data.data.title;
+  todo.description = data.data.description;
+  todo.label = data.data.label;
+  todo.category = data.data.category;
 
   await user.save();
 
-  res.status(201).json({ status: "Success", message: "Task has been updated successfully!" });
+  res.status(201).json({
+    status: "Success",
+    message: "Task has been updated successfully!",
+  });
 }

@@ -34,17 +34,24 @@ export default async function handler(
       .json({ status: "failed", messgae: "you are unauthorized" });
   }
 
-  const { title, status } = req.body;
+  const { formData, status } = req.body;
 
-  if (!title || !status) {
+  if (!formData.title || !status) {
     return res.status(422).json({ status: "failed", message: "Invaild data!" });
   }
 
   const user = await TodoUser.findOne({ email });
 
   const todo = user.todos.find((todo: any) => todo.task.id === status);
+  const title = formData.title;
+  const description = formData.description;
+  const label = formData.label;
+  const category = formData.category;
+  todo.task.list.push({ title, description, label, category, status });
 
-  todo.task.list.push({ title, status });
   await user.save();
-  res.status(201).json({ status: "Success", message: "Task has been created successfully!" });
+  res.status(201).json({
+    status: "Success",
+    message: "Task has been created successfully!",
+  });
 }

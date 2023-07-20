@@ -43,6 +43,9 @@ export default async function handler(
       list: todo.task.list.map((taskItem: any) => {
         return {
           title: taskItem.title,
+          description: taskItem.description,
+          label: taskItem.label,
+          category: taskItem.category,
           id: taskItem._id.toString(),
         };
       }),
