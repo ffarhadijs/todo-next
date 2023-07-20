@@ -14,6 +14,7 @@ import {
   Center,
   Loader,
 } from "@mantine/core";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useQuery } from "react-query";
@@ -69,9 +70,9 @@ const Header = ({
           justify={"space-between"}
           style={{ flex: "1" }}
         >
-          <Text component="h1" fz={"xl"} fw={700}>
+          <Text component={Link} href={"/dashboard"} fz={"xl"} fw={700}>
             {" "}
-            Todo-Next{" "}
+            Task-Next{" "}
           </Text>
           <Flex gap={"md"} align={"center"}>
             <ActionIcon
