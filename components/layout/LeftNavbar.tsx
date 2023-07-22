@@ -23,14 +23,14 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
     >
       <Navbar.Section grow>
         <UnstyledButton
-          onClick={() => push("/dashboard")}
+          onClick={() => push("/")}
           w="100%"
           my="xs"
           sx={{
             backgroundColor:
               theme.colorScheme === "dark"
-                ? pathname==="/dashboard"? theme.colors.dark[4] : theme.colors.dark[6]
-                : pathname==="/dashboard"? theme.colors.gray[4] : theme.colors.gray[2],
+                ? pathname==="/"? theme.colors.dark[4] : theme.colors.dark[6]
+                : pathname==="/"? theme.colors.gray[4] : theme.colors.gray[2],
             padding: "10px",
             borderRadius: "10px",
             transition: "background-color 0.3s ease-in",
