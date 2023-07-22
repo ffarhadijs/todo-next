@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import {
   Text,
@@ -7,6 +7,7 @@ import {
   ActionIcon,
   Modal,
   Menu,
+  Box,
 } from "@mantine/core";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { useDisclosure } from "@mantine/hooks";
@@ -33,6 +34,7 @@ const Item = ({ item, index, column }: ItemProps) => {
   const editHandler = () => {
     taskOpen();
   };
+  console.log(item);
   return (
     <>
       <Modal
@@ -75,7 +77,36 @@ const Item = ({ item, index, column }: ItemProps) => {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            <Text>{item.title}</Text>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "start",
+                alignItems: "start",
+              }}
+            >
+              <Box
+                bg={
+                  item.label === "bug"
+                    ? "red"
+                    : item.label === "enhancement"
+                    ? "teal"
+                    : item.label === "question"
+                    ? "pink"
+                    : item.label === "duplicate"
+                    ? "grape"
+                    : item.label === "invalid"
+                    ? "orange"
+                    : item.label === "documentation"
+                    ? "cyan"
+                    : "blue"
+                }
+                w={6}
+                h={28}
+                mr={10}
+              ></Box>
+              <Text>{item.title}</Text>
+            </Box>
             <Menu>
               <Menu.Target>
                 <ActionIcon>
