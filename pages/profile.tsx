@@ -3,6 +3,7 @@ import { UpdateUser } from "@/types/updateUser.type";
 import verifyToken from "@/utils/verifyToken";
 import { Box, Button, Center, Group, Loader, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import Head from "next/head";
 import React from "react";
 
 const Profile = () => {
@@ -38,6 +39,10 @@ const Profile = () => {
       mx={"auto"}
       my="md"
     >
+      <Head>
+        <title>Task-Next|Profile</title>
+        <meta name="description" content="Update profile info" />
+      </Head>
       {isLoading ? (
         <Center>
           <Loader />

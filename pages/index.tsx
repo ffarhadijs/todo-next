@@ -27,14 +27,15 @@ import { notifications } from "@mantine/notifications";
 import { FiPlus } from "react-icons/fi";
 import { useDisclosure } from "@mantine/hooks";
 import AddOrEditCard from "@/components/modals/addOrEditCard/AddOrEditCard";
+import Head from "next/head";
 
 export default function Dashboard() {
   const theme = useMantineTheme();
   const [columns, setColumns] = useState<any>();
   const [opened, { open, close }] = useDisclosure(false);
-  const [card, setCard] = useState();
+  const [card, setCard] = useState<any>();
 
-  const { isFetching } = useGetTasks({
+  const { isLoading: isFetching } = useGetTasks({
     onSuccess: (data: any) => {
       setColumns(data?.data?.data);
     },
@@ -169,10 +170,12 @@ export default function Dashboard() {
     open();
   };
 
-
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
+      <Head>
+        <title>Task-Next|Main page</title>
+        <meta name="description" content="Manage tasks with drag and drop" />
+      </Head>
       <Modal opened={opened} onClose={close} title="Add Card">
         <AddOrEditCard close={close} />
       </Modal>
@@ -185,7 +188,7 @@ export default function Dashboard() {
           <Grid mx={"auto"} mt={"20px"} sx={{ gap: "8px", flexWrap: "nowrap" }}>
             {columns?.map((col: any) => (
               <Grid.Col span={"auto"} w={"300px"} key={col.columnId}>
-                <Column col={col} key={col.id} card={card} setCard={setCard}/>
+                <Column col={col} key={col.id} card={card} setCard={setCard} />
               </Grid.Col>
             ))}
             <Grid.Col span={"auto"} w={"300px"}>

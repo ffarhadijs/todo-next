@@ -17,6 +17,7 @@ import { UserType } from "@/types/user.type";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { useSignup } from "@/hooks/auth/auth.hooks";
+import Head from "next/head";
 
 const Signup = () => {
   const token = Cookies.get("token");
@@ -48,7 +49,7 @@ const Signup = () => {
   };
 
   useEffect(() => {
-    token && push("/dashboard");
+    token && push("/");
   }, []);
 
   return (
@@ -63,6 +64,10 @@ const Signup = () => {
             : theme.colors.gray[2],
       }}
     >
+      <Head>
+        <title>Task-Next|Signup</title>
+        <meta name="description" content="Signup for manage tasks" />
+      </Head>
       <Box
         sx={{
           backgroundColor:

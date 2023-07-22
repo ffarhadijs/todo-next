@@ -2,6 +2,7 @@ import { useChangePassword } from "@/hooks/auth/auth.hooks";
 import { ChangePassword } from "@/types/changePassword.type";
 import { Box, Button, Group, PasswordInput } from "@mantine/core";
 import { isNotEmpty, matchesField, useForm } from "@mantine/form";
+import Head from "next/head";
 import React from "react";
 
 const ChangePassword = () => {
@@ -26,7 +27,7 @@ const ChangePassword = () => {
     form.values.newPassword,
     form.values.confirmPassword
   );
-  
+
   const submitHandler = (data: any) => {
     mutate(data);
   };
@@ -39,6 +40,10 @@ const ChangePassword = () => {
       my="md"
       onSubmit={form.onSubmit(submitHandler)}
     >
+      <Head>
+        <title>Task-Next|change-password</title>
+        <meta name="description" content="Change password page" />
+      </Head>
       <PasswordInput
         {...form.getInputProps("oldPassword")}
         label="Old Password:"

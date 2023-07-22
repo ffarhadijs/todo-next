@@ -17,6 +17,7 @@ import { UserType } from "@/types/user.type";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { useSignin } from "@/hooks/auth/auth.hooks";
+import Head from "next/head";
 
 const Signin = () => {
   const { push } = useRouter();
@@ -43,7 +44,7 @@ const Signin = () => {
     mutate(data as any);
   };
   useEffect(() => {
-    token && push("/dashboard");
+    token && push("/");
   }, []);
 
   return (
@@ -58,6 +59,10 @@ const Signin = () => {
             : theme.colors.gray[2],
       }}
     >
+      <Head>
+        <title>Task-Next|Signin</title>
+        <meta name="description" content="Signin using email and password" />
+      </Head>
       <Box
         sx={{
           backgroundColor:
