@@ -1,0 +1,35 @@
+.cardScroll {
+  scrollbar-width: thin;
+  scrollbar-color: #727374 red;
+  padding-right: 10px;
+}
+
+/* Chrome, Edge and Safari */
+.cardScroll::-webkit-scrollbar {
+  width: 6px;
+}
+.cardScroll::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: transparent;
+}
+
+.cardScroll::-webkit-scrollbar-track:hover {
+  background-color: transparent;
+}
+
+.cardScroll::-webkit-scrollbar-track:active {
+  background-color: transparent;
+}
+
+.cardScroll::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #727374;
+}
+
+.cardScroll::-webkit-scrollbar-thumb:hover {
+  background-color: #838383;
+}
+
+.cardScroll::-webkit-scrollbar-thumb:active {
+  background-color: #838383;
+}
