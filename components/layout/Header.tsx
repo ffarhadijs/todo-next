@@ -70,7 +70,7 @@ const Header = ({
           justify={"space-between"}
           style={{ flex: "1" }}
         >
-          <Text component={Link} href={"/dashboard"} fz={"xl"} fw={700}>
+          <Text component={Link} href={"/"} fz={"xl"} fw={700}>
             {" "}
             Task-Next{" "}
           </Text>
