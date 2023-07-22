@@ -18,6 +18,7 @@ import AddOrEditCard from "../modals/addOrEditCard/AddOrEditCard";
 import { useDisclosure } from "@mantine/hooks";
 import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
 import AddOrEditTask from "../modals/addOrEditTask/AddOrEditTask";
+import styles from "../../styles/styles.module.css";
 
 interface ColumnProps {
   col: any;
@@ -63,72 +64,77 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
       </Modal>
       <Droppable droppableId={col.id}>
         {(provided) => (
-          <ScrollArea h={"72vh"} offsetScrollbars pb={5}>
-            <Flex
-              direction={"column"}
-              p={"16px"}
-              sx={{
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[5]
-                    : theme.colors.gray[2],
-                borderRadius: 8,
-                flexGrow: 1,
-                marginTop: 8,
-                border: "1px dashed gray",
-                minHeight: "68vh",
-                maxWidth: "100%",
+          <Flex
+            style={{
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[5]
+                  : theme.colors.gray[2],
+              padding: "16px",
+              flexDirection: "column",
+              borderRadius: 8,
+              flexGrow: 1,
+              marginTop: 8,
+              border: "1px dashed gray",
+              height: "70vh",
+              minHeight: "auto",
+              maxWidth: "100%",
+            }}
+          >
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              <Flex
-                direction={"row"}
-                align={"center"}
-                justify={"space-between"}
-              >
-                <Title order={3}>{col.id}</Title>
-                <Menu shadow="md">
-                  <Menu.Target>
-                    <ActionIcon>
-                      <BsThreeDots size={"20px"} />
-                    </ActionIcon>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item
-                      icon={<MdEdit size={"16px"} />}
-                      onClick={() => editCardHandler(col)}
-                    >
-                      Edit
-                    </Menu.Item>
-                    <Menu.Item
-                      icon={<MdDelete size={"16px"} />}
-                      onClick={() => deleteCardHandler(col)}
-                    >
-                      Delete
-                    </Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Item
-                      icon={<MdAdd size={"16px"} />}
-                      onClick={addTaskHandler}
-                    >
-                      Add Task
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </Flex>
-              <Divider mt={"xs"} />
-              <Box {...provided.droppableProps} ref={provided.innerRef}>
-                {col.list?.map((item: any, index: any) => (
-                  <Item
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    column={col.id}
-                  />
-                ))}
-                {provided.placeholder}
-              </Box>
-            </Flex>
-          </ScrollArea>
+              <Title order={3}>{col.id}</Title>
+              <Menu shadow="md">
+                <Menu.Target>
+                  <ActionIcon>
+                    <BsThreeDots size={"20px"} />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    icon={<MdEdit size={"16px"} />}
+                    onClick={() => editCardHandler(col)}
+                  >
+                    Edit
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={<MdDelete size={"16px"} />}
+                    onClick={() => deleteCardHandler(col)}
+                  >
+                    Delete
+                  </Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Item
+                    icon={<MdAdd size={"16px"} />}
+                    onClick={addTaskHandler}
+                  >
+                    Add Task
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Box>
+            <Divider mt={"xs"} />
+            <Box
+              className={styles.cardScroll}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={{
+                height: "100%",
+                overflow: "auto",
+              }}
+            >
+              {col.list?.map((item: any, index: any) => (
+                <Item key={item.id} item={item} index={index} column={col.id} />
+              ))}
+              {provided.placeholder}
+            </Box>
+          </Flex>
         )}
       </Droppable>
     </>
