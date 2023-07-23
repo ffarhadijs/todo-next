@@ -24,7 +24,7 @@ export const useSignin = (
         title: "Signin",
         message: "User signed in successfully!",
       });
-      push("/dashboard");
+      push("/");
     },
     onError: (error: any) => {
       notifications.show({
