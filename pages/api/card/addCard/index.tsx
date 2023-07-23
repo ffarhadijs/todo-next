@@ -31,13 +31,12 @@ export default async function handler(
   if (!email) {
     return res
       .status(401)
-      .json({ status: "failed", messgae: "you are unauthorized" });
+      .json({ status: "Failed", messgae: "you are unauthorized" });
   }
 
   const { id } = req.body;
-  console.log(req.body)
   if (!id) {
-    return res.status(422).json({ status: "failed", message: "Invaild data!" });
+    return res.status(422).json({ status: "Failed", message: "Invaild data!" });
   }
 
   const user = await TodoUser.findOne({ email });

@@ -13,7 +13,6 @@ import {
 import { isEmail, isNotEmpty } from "@mantine/form";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
-import { UserType } from "@/types/user.type";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { useSignin } from "@/hooks/auth/auth.hooks";
@@ -40,8 +39,8 @@ const Signin = () => {
     form.values.password
   );
 
-  const submitHandler = (data: UserType) => {
-    mutate(data as any);
+  const submitHandler = () => {
+    mutate();
   };
   useEffect(() => {
     token && push("/");

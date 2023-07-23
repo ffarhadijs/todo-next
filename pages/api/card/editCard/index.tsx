@@ -1,4 +1,5 @@
 import TodoUser from "@/models/TodoUser";
+import { ColumnType } from "@/types/column.type";
 import { connectDB } from "@/utils/connectDB";
 import verifyToken from "@/utils/verifyToken";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -40,12 +41,10 @@ export default async function handler(
   }
 
   const user = await TodoUser.findOne({ email });
-  const existId = user.todos.findIndex(
-    (item: any) => item.task.id === data.id
-  );
+  const existId = user.todos.findIndex((item: any) => item.task.id === data.id);
 
   if (existId === -1) {
-    const card = user.todos.find((item: any) => item.id === columnId);
+    const card = user.todos.find((item: ColumnType) => item.id === columnId);
     card.task.id = data.id;
 
     await user.save();

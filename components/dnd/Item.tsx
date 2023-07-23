@@ -14,13 +14,14 @@ import { useDisclosure } from "@mantine/hooks";
 import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
 import { DotsVertical } from "tabler-icons-react";
 import AddOrEditTask from "../modals/addOrEditTask/AddOrEditTask";
+import { TodoType } from "@/types/todo.type";
 
-interface ItemProps {
-  item: any;
+interface Props {
+  item: TodoType;
   index: number;
-  column: any;
+  column: string;
 }
-const Item = ({ item, index, column }: ItemProps) => {
+const Item = ({ item, index, column }: Props) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [taskOpened, { open: taskOpen, close: taskClose }] =
     useDisclosure(false);
@@ -34,7 +35,7 @@ const Item = ({ item, index, column }: ItemProps) => {
   const editHandler = () => {
     taskOpen();
   };
-  console.log(item);
+
   return (
     <>
       <Modal

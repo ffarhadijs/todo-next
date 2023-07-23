@@ -35,7 +35,6 @@ export default async function handler(
   }
 
   const data = req.body;
-  console.log(data,"data")
 
   const user = await TodoUser.findOne({ email });
 
@@ -43,7 +42,6 @@ export default async function handler(
     (todo: any) => todo.task.id === data.startId
   );
   const endList = user.todos.find((todo: any) => todo.task.id === data.endId);
-  console.log(startList,"startList")
   startList!.task.list = data.newStartList;
   endList.task.list = data.newEndList;
   await user.save();

@@ -45,7 +45,7 @@ const Signup = () => {
   );
 
   const submitHandler = (data: UserType) => {
-    mutate(data as any);
+    mutate();
   };
 
   useEffect(() => {

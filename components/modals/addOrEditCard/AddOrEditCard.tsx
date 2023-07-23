@@ -1,16 +1,16 @@
 import { useAddNewCard, useEditCard } from "@/hooks/cards/cards.hooks";
+import { ColumnType } from "@/types/column.type";
 import { Box, TextInput, Group, Button } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "react-query";
 
-export default function AddOrEditCard({
-  close,
-  col,
-}: {
+type Props = {
   close: () => void;
-  col?: any;
-}) {
+  col?: ColumnType;
+};
+
+export default function AddOrEditCard({ close, col }: Props) {
   const editable = !!col?.columnId;
 
   const form = useForm({
@@ -43,7 +43,7 @@ export default function AddOrEditCard({
   });
   const { mutate: editCardMutate, isLoading: editCardLoading } = useEditCard(
     form.values,
-    col?.columnId,
+    col?.columnId!,
     {
       onSuccess: () => {
         close();
@@ -64,12 +64,11 @@ export default function AddOrEditCard({
     }
   );
 
-  const submitHandler = (data: any) => {
-    const columnId = col?.columnId;
+  const submitHandler = () => {
     if (editable) {
-      editCardMutate(data, columnId);
+      editCardMutate();
     } else {
-      mutate(data);
+      mutate();
     }
   };
   return (

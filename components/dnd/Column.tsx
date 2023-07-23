@@ -19,14 +19,16 @@ import { useDisclosure } from "@mantine/hooks";
 import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
 import AddOrEditTask from "../modals/addOrEditTask/AddOrEditTask";
 import styles from "../../styles/styles.module.css";
+import { ColumnType } from "@/types/column.type";
+import { TodoType } from "@/types/todo.type";
 
-interface ColumnProps {
-  col: any;
-  card: any;
+interface Props {
+  col: ColumnType;
+  card: ColumnType;
   setCard: any;
 }
 
-const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
+const Column = ({ col, card, setCard }: Props) => {
   const theme = useMantineTheme();
   const [opened, { open, close }] = useDisclosure(false);
   const [taskOpened, { open: taskOpen, close: taskClose }] =
@@ -38,11 +40,11 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
     taskOpen();
   };
 
-  const editCardHandler = (col: any) => {
+  const editCardHandler = (col: ColumnType) => {
     open();
     setCard(col);
   };
-  const deleteCardHandler = (col: any) => {
+  const deleteCardHandler = (col: ColumnType) => {
     setCard(col);
     deleteOpen();
   };
@@ -57,9 +59,9 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
         {opened ? (
           <AddOrEditCard close={close} col={card} />
         ) : deleteOpened ? (
-          <ConfirmDelete column={card} close={deleteClose} />
+          <ConfirmDelete column={card.columnId} close={deleteClose} />
         ) : (
-          <AddOrEditTask close={taskClose} col={col} />
+          <AddOrEditTask close={taskClose} col={col.id} />
         )}
       </Modal>
       <Droppable droppableId={col.id}>
@@ -129,7 +131,7 @@ const Column: React.FC<ColumnProps> = ({ col, card, setCard }) => {
                 overflow: "auto",
               }}
             >
-              {col.list?.map((item: any, index: any) => (
+              {col.list?.map((item: TodoType, index: number) => (
                 <Item key={item.id} item={item} index={index} column={col.id} />
               ))}
               {provided.placeholder}

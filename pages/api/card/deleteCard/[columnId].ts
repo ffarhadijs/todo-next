@@ -1,4 +1,5 @@
 import TodoUser from "@/models/TodoUser";
+import { ColumnType } from "@/types/column.type";
 import { connectDB } from "@/utils/connectDB";
 import verifyToken from "@/utils/verifyToken";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -42,7 +43,7 @@ export default async function handler(
 
   const user = await TodoUser.findOne({ email });
 
-  const column = user.todos.filter((item: any) => item.id !== columnId);
+  const column = user.todos.filter((item: ColumnType) => item.id !== columnId);
 
   user.todos = column;
   await user.save();

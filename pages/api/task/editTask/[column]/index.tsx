@@ -1,4 +1,5 @@
 import TodoUser from "@/models/TodoUser";
+import { ColumnType } from "@/types/column.type";
 import { connectDB } from "@/utils/connectDB";
 import verifyToken from "@/utils/verifyToken";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -40,7 +41,7 @@ export default async function handler(
   const user = await TodoUser.findOne({ email });
 
   const columnId = user.todos.find((item: any) => item.task.id === column);
-  const todo = columnId.task.list.find((item: any) => item.id === data.itemId);
+  const todo = columnId.task.list.find((item: ColumnType) => item.id === data.itemId);
 
   todo.title = data.data.title;
   todo.description = data.data.description;

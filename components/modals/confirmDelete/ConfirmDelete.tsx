@@ -5,11 +5,16 @@ import { notifications } from "@mantine/notifications";
 import { useDeleteTask } from "@/hooks/tasks/tasks.hooks";
 import { useDeleteCard } from "@/hooks/cards/cards.hooks";
 
-const ConfirmDelete = ({ column, itemId, close }: any) => {
-  const queryClient = useQueryClient();
-  const columnId = column.columnId;
+type Props = {
+  column: string;
+  itemId?: string;
+  close: () => void;
+};
 
-  const { mutate, isLoading } = useDeleteTask(column, itemId, {
+const ConfirmDelete = ({ column, itemId, close }: Props) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isLoading } = useDeleteTask(column, itemId!, {
     onSuccess: () => {
       queryClient.invalidateQueries();
       close();
@@ -29,7 +34,7 @@ const ConfirmDelete = ({ column, itemId, close }: any) => {
   });
 
   const { mutate: deleteCardMutate, isLoading: deleteCardLoading } =
-    useDeleteCard(columnId, {
+    useDeleteCard(column, {
       onSuccess: () => {
         queryClient.invalidateQueries();
         close();
@@ -54,9 +59,9 @@ const ConfirmDelete = ({ column, itemId, close }: any) => {
 
   const deleteHandler = () => {
     if (itemId) {
-      mutate(column, itemId);
+      mutate();
     } else {
-      deleteCardMutate(columnId);
+      deleteCardMutate();
     }
   };
 

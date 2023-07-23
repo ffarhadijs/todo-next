@@ -2,7 +2,7 @@ import axios from "axios";
 import { UseMutationOptions, useMutation } from "react-query";
 
 export function useAddNewCard(
-  data: any,
+  data: { id: string },
   options?: UseMutationOptions<unknown, unknown, void, unknown>
 ) {
   return useMutation({
@@ -12,8 +12,8 @@ export function useAddNewCard(
 }
 
 export function useEditCard(
-  data: any,
-  columnId: any,
+  data: { id: string },
+  columnId: string,
   options?: UseMutationOptions<unknown, unknown, void, unknown>
 ) {
   return useMutation({
@@ -23,7 +23,7 @@ export function useEditCard(
 }
 
 export function useDeleteCard(
-  columnId: any,
+  columnId: string,
   options?: UseMutationOptions<unknown, unknown, void, unknown>
 ) {
   return useMutation({

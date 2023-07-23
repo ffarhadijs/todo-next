@@ -13,11 +13,12 @@ import { useQueryClient } from "react-query";
 import { notifications } from "@mantine/notifications";
 import { useAddTask, useEditTask } from "@/hooks/tasks/tasks.hooks";
 import { forwardRef } from "react";
+import { TodoType } from "@/types/todo.type";
 
 type Props = {
   close: () => void;
-  col: any;
-  task?: any;
+  col: string;
+  task?: TodoType;
 };
 
 const selectData = [
@@ -99,7 +100,7 @@ export default function AddOrEditTask({ close, col, task }: Props) {
   const formData = form.values;
   const data = {
     formData,
-    status: col.id,
+    status: col,
   };
 
   const { mutate, isLoading } = useAddTask(data, {
@@ -114,18 +115,25 @@ export default function AddOrEditTask({ close, col, task }: Props) {
       });
     },
   });
-  const { mutate: editTaskMutate, isLoading:editLoading } = useEditTask(col, itemId, formData, {
-    onSuccess: () => {
-      useQuery.invalidateQueries();
-      form.reset();
-      close();
-      notifications.show({
-        color: "green",
-        title: "Edit Task",
-        message: "Task has been updated successfully",
-      });
-    },
-  });
+
+
+  const { mutate: editTaskMutate, isLoading: editLoading } = useEditTask(
+    col,
+    itemId,
+    formData,
+    {
+      onSuccess: () => {
+        useQuery.invalidateQueries();
+        form.reset();
+        close();
+        notifications.show({
+          color: "green",
+          title: "Edit Task",
+          message: "Task has been updated successfully",
+        });
+      },
+    }
+  );
 
   const submitHandler = () => {
     if (itemId) {
@@ -167,7 +175,7 @@ export default function AddOrEditTask({ close, col, task }: Props) {
         <Button color="red" onClick={close}>
           Cancel
         </Button>
-        <Button loading={isLoading||editLoading} color="teal" type="submit">
+        <Button loading={isLoading || editLoading} color="teal" type="submit">
           Save
         </Button>
       </Group>

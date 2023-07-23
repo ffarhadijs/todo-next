@@ -28,8 +28,8 @@ const ChangePassword = () => {
     form.values.confirmPassword
   );
 
-  const submitHandler = (data: any) => {
-    mutate(data);
+  const submitHandler = () => {
+    mutate();
   };
 
   return (

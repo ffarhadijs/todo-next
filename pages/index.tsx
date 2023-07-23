@@ -5,7 +5,6 @@ import {
   ScrollArea,
   Center,
   Loader,
-  Button,
   Modal,
   Title,
   Flex,
@@ -28,12 +27,15 @@ import { FiPlus } from "react-icons/fi";
 import { useDisclosure } from "@mantine/hooks";
 import AddOrEditCard from "@/components/modals/addOrEditCard/AddOrEditCard";
 import Head from "next/head";
+import { ColumnsType } from "@/types/columns.type";
+import { ColumnType } from "@/types/column.type";
+import { GetServerSidePropsContext } from "next";
 
 export default function Dashboard() {
   const theme = useMantineTheme();
-  const [columns, setColumns] = useState<any>();
+  const [columns, setColumns] = useState<ColumnsType>();
   const [opened, { open, close }] = useDisclosure(false);
-  const [card, setCard] = useState<any>();
+  const [card, setCard] = useState<ColumnType>();
 
   const { isLoading: isFetching } = useGetTasks({
     onSuccess: (data: any) => {
@@ -75,9 +77,11 @@ export default function Dashboard() {
       return null;
 
     // Set start and end variables
-    const start = columns?.find((item: any) => item.id === source.droppableId);
+    const start = columns?.find(
+      (item: ColumnType) => item.id === source.droppableId
+    );
     const end = columns?.find(
-      (item: any) => item.id === destination.droppableId
+      (item: ColumnType) => item.id === destination.droppableId
     );
 
     // If start is the same as end, we're in the same column
@@ -89,7 +93,7 @@ export default function Dashboard() {
       );
 
       // Then insert the item at the right location
-      newList?.splice(destination.index, 0, start.list[source.index]);
+      newList?.splice(destination.index, 0, start!.list[source.index]);
 
       // Then create a new copy of the column object
       const newCol = {
@@ -97,61 +101,61 @@ export default function Dashboard() {
         id: start?.id,
         list: newList,
       };
-      const id = start.id;
+      const id = start?.id;
       // Update the state
-      const newColumn = [...columns];
+      const newColumn = [...columns!];
       const columnIndex = columns?.findIndex(
-        (item: any) => item.id === source.droppableId
-      );
-      newColumn[columnIndex] = newCol;
-      setColumns(newColumn);
+        (item: ColumnType) => item.id === source.droppableId
+      ) as number;
+      newColumn[columnIndex] = newCol as ColumnType;
+      setColumns(newColumn as ColumnsType);
       const data = { newList, id };
       mutate(data as any);
       return null;
     } else {
       // If start is different from end, we need to update multiple columns
       // Filter the start list like before
-      const newStartList = start.list.filter(
+      const newStartList = start?.list.filter(
         (_: any, idx: number) => idx !== source.index
       );
 
       // Create a new start column
       const newStartCol = {
         columnId: start?.columnId,
-        id: start.id,
+        id: start?.id,
         list: newStartList,
       };
-      const startId = start.id;
+      const startId = start?.id;
       // Make a new end list array
-      const newEndList = end.list;
+      const newEndList = end?.list;
 
       // Insert the item into the end list
-      newEndList.splice(destination.index, 0, start.list[source.index]);
+      newEndList!.splice(destination.index, 0, start!.list[source.index]);
 
       // Create a new end column
       const newEndCol = {
         columnId: end?.columnId,
-        id: end.id,
+        id: end!.id,
         list: newEndList,
       };
-      const endId = end.id;
+      const endId = end!.id;
       // Update the state
       setColumns((state: any) => ({
         ...state,
-        [newStartCol.id]: newStartCol,
+        [newStartCol.id as string]: newStartCol,
         [newEndCol.id]: newEndCol,
       }));
 
-      const newColumn = [...columns];
-      const newStartColIndex = columns.findIndex(
-        (item: any) => item.id === source.droppableId
+      const newColumn = [...columns!];
+      const newStartColIndex = columns!.findIndex(
+        (item: ColumnType) => item.id === source.droppableId
       );
-      const newEndColIndex = columns.findIndex(
-        (item: any) => item.id === destination.droppableId
+      const newEndColIndex = columns!.findIndex(
+        (item: ColumnType) => item.id === destination.droppableId
       );
-      newColumn[newStartColIndex] = newStartCol;
-      newColumn[newEndColIndex] = newEndCol;
-      setColumns(newColumn);
+      newColumn[newStartColIndex] = newStartCol as ColumnType;
+      newColumn[newEndColIndex] = newEndCol as ColumnType;
+      setColumns(newColumn as ColumnsType);
 
       const data = {
         newStartList,
@@ -186,9 +190,9 @@ export default function Dashboard() {
           </Center>
         ) : (
           <Grid mx={"auto"} mt={"20px"} sx={{ gap: "8px", flexWrap: "nowrap" }}>
-            {columns?.map((col: any) => (
+            {columns?.map((col: ColumnType) => (
               <Grid.Col span={"auto"} w={"300px"} key={col.columnId}>
-                <Column col={col} key={col.id} card={card} setCard={setCard} />
+                <Column col={col} key={col.id} card={card!} setCard={setCard} />
               </Grid.Col>
             ))}
             <Grid.Col span={"auto"} w={"300px"}>
@@ -230,12 +234,12 @@ export default function Dashboard() {
   );
 }
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { token } = context.req.cookies;
   const secretKey = process.env.SECRET_KEY;
   await connectDB();
   resetServerContext();
-  const { email } = await verifyToken(token, secretKey!);
+  const { email } = await verifyToken(token!, secretKey!);
 
   if (!email) {
     return {

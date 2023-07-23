@@ -41,26 +41,28 @@ export const useAddTask = (
 };
 
 export const useEditTask = (
-  column: any,
-  itemId: any,
+  column: string,
+  itemId: string | undefined,
   data: any,
   options?: UseMutationOptions<unknown, unknown, void, unknown>
 ) => {
   return useMutation({
     mutationFn: () =>
-      axios.patch(`/api/task/editTask/${column}`, { itemId, data}),
-      onError: (error: any) => {
-        notifications.show({
-          color: "red",
-          title: "Error",
-          message: error?.response?.data?.message,
-        });
-      },
+      axios.patch(`/api/task/editTask/${column}`, { itemId, data }),
+    onError: (error: any) => {
+      notifications.show({
+        color: "red",
+        title: "Error",
+        message: error?.response?.data?.message,
+      });
+    },
     ...options,
   });
 };
 
-export const useDeleteTask = (column:any,itemId:any,
+export const useDeleteTask = (
+  column: string,
+  itemId: string,
   options?: UseMutationOptions<unknown, unknown, void, unknown>
 ) => {
   return useMutation({

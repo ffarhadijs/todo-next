@@ -3,6 +3,7 @@ import { UpdateUser } from "@/types/updateUser.type";
 import verifyToken from "@/utils/verifyToken";
 import { Box, Button, Center, Group, Loader, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import React from "react";
 
@@ -28,8 +29,8 @@ const Profile = () => {
     form.values.email!
   );
 
-  const submitHandler = (data: UpdateUser) => {
-    mutate(data as any);
+  const submitHandler = () => {
+    mutate();
   };
   return (
     <Box
@@ -80,11 +81,11 @@ const Profile = () => {
 
 export default Profile;
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { token } = context.req.cookies;
   const secretKey = process.env.SECRET_KEY;
 
-  const { email } = await verifyToken(token, secretKey!);
+  const { email } = await verifyToken(token!, secretKey!);
   if (!email) {
     return {
       redirect: { destination: "/signin", permanent: false },
