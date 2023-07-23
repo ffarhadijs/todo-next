@@ -1,16 +1,27 @@
+import { useGetUser } from "@/hooks/auth/auth.hooks";
 import {
   Navbar,
   UnstyledButton,
   Group,
   Text,
   useMantineTheme,
+  MediaQuery,
+  Divider,
+  Center,
+  Loader,
+  Flex,
+  Box,
 } from "@mantine/core";
 import { useRouter } from "next/router";
-import { Dashboard, Lock, UserCircle } from "tabler-icons-react";
+import { AiOutlineDashboard } from "react-icons/ai";
+import { BiUserCircle } from "react-icons/bi";
+import { BiLock } from "react-icons/bi";
 const LeftNavbar = ({ opened }: { opened: boolean }) => {
   const { push, pathname } = useRouter();
   const theme = useMantineTheme();
-
+  const { data, isLoading } = useGetUser({
+    refetchOnMount: "always",
+  });
   return (
     <Navbar
       p={"md"}
@@ -18,7 +29,7 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
       hidden={!opened}
       width={{ xs: 250 }}
       style={{
-        width: opened ? "200px" : "0",
+        width: opened ? "250px" : "0",
       }}
     >
       <Navbar.Section grow>
@@ -48,7 +59,7 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           }}
         >
           <Group>
-            <Dashboard />
+            <AiOutlineDashboard size={22} />
             <Text>Dashboard</Text>
           </Group>
         </UnstyledButton>
@@ -78,7 +89,7 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           }}
         >
           <Group>
-            <UserCircle />
+            <BiUserCircle size={22} />
             <Text>Update Profile</Text>
           </Group>
         </UnstyledButton>
@@ -108,11 +119,56 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           }}
         >
           <Group>
-            <Lock />
+            <BiLock size={22} />
             <Text>Change Password</Text>
           </Group>
         </UnstyledButton>
       </Navbar.Section>
+      <Divider display={{ xs: "none" }} />
+      <MediaQuery largerThan="xs" styles={{ display: "none" }}>
+        <UnstyledButton
+          onClick={() => push("/profile")}
+          w="100%"
+          p="sm"
+          sx={{
+            "&:hover": {
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[6]
+                  : theme.colors.gray[0],
+            },
+          }}
+        >
+          {isLoading ? (
+            <Center>
+              <Loader />
+            </Center>
+          ) : (
+            <Flex
+              direction={"row"}
+              align={"center"}
+              justify={"space-between"}
+              gap={"xs"}
+            >
+              <BiUserCircle size={22} />
+              <Box>
+                <Text fw="600" fz="sm">
+                  {data?.data?.data?.firstName
+                    ? data?.data?.data?.firstName
+                    : "User Name"}
+                </Text>
+                <Text
+                  fw={600}
+                  fz="xs"
+                  c={theme.colorScheme === "dark" ? "gray.6" : "gray.7"}
+                >
+                  {data?.data?.data.email}
+                </Text>
+              </Box>
+            </Flex>
+          )}
+        </UnstyledButton>
+      </MediaQuery>
     </Navbar>
   );
 };

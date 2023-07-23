@@ -189,7 +189,7 @@ export default function Dashboard() {
             <Loader />
           </Center>
         )}
-        {isSuccess && columns?.length && (
+        {isSuccess && (
           <Grid mx={"auto"} mt={"20px"} sx={{ gap: "8px", flexWrap: "nowrap" }}>
             {columns?.map((col: ColumnType) => (
               <Grid.Col span={2} xs={3} w={"300px"} key={col.columnId}>

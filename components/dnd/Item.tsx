@@ -12,9 +12,9 @@ import {
 import { MdDelete, MdEdit } from "react-icons/md";
 import { useDisclosure } from "@mantine/hooks";
 import ConfirmDelete from "../modals/confirmDelete/ConfirmDelete";
-import { DotsVertical } from "tabler-icons-react";
 import AddOrEditTask from "../modals/addOrEditTask/AddOrEditTask";
 import { TodoType } from "@/types/todo.type";
+import { BiDotsVerticalRounded } from "react-icons/bi";
 
 interface Props {
   item: TodoType;
@@ -111,7 +111,7 @@ const Item = ({ item, index, column }: Props) => {
             <Menu>
               <Menu.Target>
                 <ActionIcon>
-                  <DotsVertical size={"18px"} />
+                  <BiDotsVerticalRounded size={"18px"} />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>

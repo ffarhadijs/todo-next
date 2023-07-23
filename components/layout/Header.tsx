@@ -1,4 +1,4 @@
-import { useGetUser } from "@/hooks/auth/auth.hooks";
+import { useGetUser, useSignout } from "@/hooks/auth/auth.hooks";
 import {
   Text,
   MediaQuery,
@@ -13,12 +13,16 @@ import {
   UnstyledButton,
   Center,
   Loader,
+  Group,
 } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
-import { useQuery } from "react-query";
-import { Sun, MoonStars, Power, UserCircle } from "tabler-icons-react";
+import { RiTaskLine } from "react-icons/ri";
+import { BiSun } from "react-icons/bi";
+import { BsMoonStars } from "react-icons/bs";
+import { FiPower } from "react-icons/fi";
+import { BiUserCircle } from "react-icons/bi";
 
 const Header = ({
   dark,
@@ -38,7 +42,7 @@ const Header = ({
     refetchOnMount: "always",
   });
 
-  const logoutApi = useQuery({
+  const logoutApi = useSignout({
     enabled: logout,
   });
 
@@ -46,43 +50,39 @@ const Header = ({
     setLogout(true);
   };
   return (
-    <MantineHeader height={{ base: 50, md: 70 }} p="md">
+    <MantineHeader height={70} p="md">
       <Flex
         direction={"row"}
-        justify={"right"}
+        justify={"space-between"}
         align={"center"}
         h={"100%"}
         w="100%"
       >
-        <Box w={{ base: 180, lg: 280 }} mr="auto">
-          <MediaQuery largerThan="xs" styles={{ display: "none" }}>
-            <Burger
-              opened={opened}
-              onClick={() => setOpened((o) => !o)}
-              size="sm"
-              color={theme.colors.gray[6]}
-            />
-          </MediaQuery>
-        </Box>
-        <Flex
-          direction={"row"}
-          align={"center"}
-          justify={"space-between"}
-          style={{ flex: "1" }}
-        >
+        <MediaQuery largerThan="xs" styles={{ display: "none" }}>
+          <Burger
+            opened={opened}
+            onClick={() => setOpened((o) => !o)}
+            size="sm"
+            color={theme.colors.gray[6]}
+          />
+        </MediaQuery>
+        <Group position="left">
+          <RiTaskLine size={25} />
           <Text component={Link} href={"/"} fz={"xl"} fw={700}>
-            {" "}
-            Task-Next{" "}
+            Task-Next
           </Text>
-          <Flex gap={"md"} align={"center"}>
+        </Group>
+        <Flex gap={"md"} align={"center"}>
+          <Tooltip label="Toggle color scheme">
             <ActionIcon
               variant="outline"
               color={dark ? "yellow" : "blue"}
               onClick={() => toggleColorScheme()}
-              title="Toggle color scheme"
             >
-              {dark ? <Sun size="1.1rem" /> : <MoonStars size="1.1rem" />}
+              {dark ? <BiSun size="1.1rem" /> : <BsMoonStars size="1.1rem" />}
             </ActionIcon>
+          </Tooltip>
+          <MediaQuery smallerThan="xs" styles={{ display: "none" }}>
             <UnstyledButton
               onClick={() => push("/profile")}
               w="100%"
@@ -107,7 +107,7 @@ const Header = ({
                   justify={"space-between"}
                   gap={"xs"}
                 >
-                  <UserCircle size={"1.8rem"} />
+                  <BiUserCircle size={"1.8rem"} />
                   <MediaQuery smallerThan={"sm"} styles={{ display: "none" }}>
                     <Box>
                       <Text fw="600" fz="sm">
@@ -127,12 +127,13 @@ const Header = ({
                 </Flex>
               )}
             </UnstyledButton>
-            <Tooltip label="Logout">
-              <ActionIcon onClick={logoutHandler}>
-                <Power />
-              </ActionIcon>
-            </Tooltip>
-          </Flex>
+          </MediaQuery>
+
+          <Tooltip label="Logout">
+            <ActionIcon onClick={logoutHandler}>
+              <FiPower size="20px"/>
+            </ActionIcon>
+          </Tooltip>
         </Flex>
       </Flex>
     </MantineHeader>
