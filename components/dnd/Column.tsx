@@ -5,7 +5,6 @@ import {
   Box,
   ActionIcon,
   useMantineTheme,
-  ScrollArea,
   Title,
   Menu,
   Divider,

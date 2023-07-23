@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [opened, { open, close }] = useDisclosure(false);
   const [card, setCard] = useState<ColumnType>();
 
-  const { isLoading: isFetching } = useGetTasks({
+  const { isLoading, isSuccess } = useGetTasks({
     onSuccess: (data: any) => {
       setColumns(data?.data?.data);
     },
@@ -184,48 +184,47 @@ export default function Dashboard() {
         <AddOrEditCard close={close} />
       </Modal>
       <ScrollArea h={"83vh"} type="auto" w={"100%"} offsetScrollbars>
-        {isFetching ? (
+        {isLoading && (
           <Center>
             <Loader />
           </Center>
-        ) : (
+        )}
+        {isSuccess && columns?.length && (
           <Grid mx={"auto"} mt={"20px"} sx={{ gap: "8px", flexWrap: "nowrap" }}>
             {columns?.map((col: ColumnType) => (
-              <Grid.Col span={"auto"} w={"300px"} key={col.columnId}>
+              <Grid.Col span={2} xs={3} w={"300px"} key={col.columnId}>
                 <Column col={col} key={col.id} card={card!} setCard={setCard} />
               </Grid.Col>
             ))}
-            <Grid.Col span={"auto"} w={"300px"}>
-              <ScrollArea h={"72vh"} offsetScrollbars pb={5}>
-                <Flex
-                  direction={"column"}
-                  py={"16px"}
-                  px={"16px"}
+            <Grid.Col span={2} xs={3} w={"300px"}>
+              <Flex
+                direction={"column"}
+                py={"16px"}
+                px={"16px"}
+                sx={{
+                  backgroundColor:
+                    theme.colorScheme === "dark"
+                      ? theme.colors.dark[5]
+                      : theme.colors.gray[2],
+                  borderRadius: 8,
+                  flexGrow: 1,
+                  marginTop: 8,
+                  border: "1px dashed gray",
+                  height: "70vh",
+                }}
+              >
+                <Title order={3}> Add Card </Title>
+                <Divider mt={"xs"} />
+                <ActionIcon
                   sx={{
-                    backgroundColor:
-                      theme.colorScheme === "dark"
-                        ? theme.colors.dark[5]
-                        : theme.colors.gray[2],
-                    borderRadius: 8,
-                    flexGrow: 1,
-                    marginTop: 8,
-                    border: "1px dashed gray",
-                    height: "68vh",
+                    height: "100%",
+                    width: "100%",
                   }}
+                  onClick={addCardHandler}
                 >
-                  <Title order={3}> Add Card </Title>
-                  <Divider mt={"xs"} />
-                  <ActionIcon
-                    sx={{
-                      height: "100%",
-                      width: "100%",
-                    }}
-                    onClick={addCardHandler}
-                  >
-                    <FiPlus size={"40px"} />
-                  </ActionIcon>
-                </Flex>
-              </ScrollArea>
+                  <FiPlus size={"40px"} />
+                </ActionIcon>
+              </Flex>
             </Grid.Col>
           </Grid>
         )}

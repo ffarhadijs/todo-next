@@ -16,7 +16,7 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
       p={"md"}
       hiddenBreakpoint="xs"
       hidden={!opened}
-      width={{ xs: 200, lg: 250 }}
+      width={{ xs: 250 }}
       style={{
         width: opened ? "200px" : "0",
       }}
@@ -29,8 +29,12 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           sx={{
             backgroundColor:
               theme.colorScheme === "dark"
-                ? pathname==="/"? theme.colors.dark[4] : theme.colors.dark[6]
-                : pathname==="/"? theme.colors.gray[4] : theme.colors.gray[2],
+                ? pathname === "/"
+                  ? theme.colors.dark[4]
+                  : theme.colors.dark[6]
+                : pathname === "/"
+                ? theme.colors.gray[4]
+                : theme.colors.gray[2],
             padding: "10px",
             borderRadius: "10px",
             transition: "background-color 0.3s ease-in",
@@ -55,8 +59,12 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           sx={{
             backgroundColor:
               theme.colorScheme === "dark"
-                ? pathname==="/profile"? theme.colors.dark[4] : theme.colors.dark[6]
-                : pathname==="/profile"? theme.colors.gray[4] : theme.colors.gray[2],
+                ? pathname === "/profile"
+                  ? theme.colors.dark[4]
+                  : theme.colors.dark[6]
+                : pathname === "/profile"
+                ? theme.colors.gray[4]
+                : theme.colors.gray[2],
             padding: "10px",
             borderRadius: "10px",
             transition: "background-color 0.3s ease-in",
@@ -81,9 +89,13 @@ const LeftNavbar = ({ opened }: { opened: boolean }) => {
           sx={{
             backgroundColor:
               theme.colorScheme === "dark"
-              ? pathname==="/change-password"? theme.colors.dark[4] : theme.colors.dark[6]
-              : pathname==="/change-password"? theme.colors.gray[4] : theme.colors.gray[2],
-              padding: "10px",
+                ? pathname === "/change-password"
+                  ? theme.colors.dark[4]
+                  : theme.colors.dark[6]
+                : pathname === "/change-password"
+                ? theme.colors.gray[4]
+                : theme.colors.gray[2],
+            padding: "10px",
             borderRadius: "10px",
             transition: "background-color 0.3s ease-in",
             "&:hover": {
